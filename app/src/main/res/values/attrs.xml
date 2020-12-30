@@ -1,0 +1,19 @@
+<resources>
+    <declare-styleable name="MonthView">
+        <attr name="month" format="enum">
+            <enum name="January" value="1" />
+            <enum name="February" value="2" />
+            <enum name="March" value="3" />
+            <enum name="April" value="4" />
+            <enum name="May" value="5" />
+            <enum name="June" value="6" />
+            <enum name="July" value="7" />
+            <enum name="August" value="8" />
+            <enum name="September" value="9" />
+            <enum name="October" value="10" />
+            <enum name="November" value="11" />
+            <enum name="December" value="12" />
+        </attr>
+        <attr name="year" format="integer" />
+    </declare-styleable>
+</resources>

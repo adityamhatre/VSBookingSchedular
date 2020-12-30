@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:month_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.main.MainFragment">
+
+    <ScrollView
+        android:id="@+id/scrollLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingBottom="8dp">
+
+        <LinearLayout
+            android:id="@+id/yearList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                month_view:month="January"
+                month_view:year="2021" />
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                month_view:month="February"
+                month_view:year="2021" />
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                month_view:month="March"
+                month_view:year="2021" />
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                month_view:month="April"
+                month_view:year="2021" />
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                month_view:month="May"
+                month_view:year="2021" />
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                month_view:month="June"
+                month_view:year="2021" />
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                month_view:month="July"
+                month_view:year="2021" />
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                month_view:month="August"
+                month_view:year="2021" />
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                month_view:month="September"
+                month_view:year="2021" />
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                month_view:month="October"
+                month_view:year="2021" />
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                month_view:month="November"
+                month_view:year="2021" />
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                month_view:month="December"
+                month_view:year="2021" />
+        </LinearLayout>
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
