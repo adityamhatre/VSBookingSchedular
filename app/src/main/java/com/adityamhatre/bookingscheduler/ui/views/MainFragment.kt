@@ -9,7 +9,7 @@ import android.widget.ScrollView
 import androidx.core.view.children
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.customViews.MonthView
 import com.adityamhatre.bookingscheduler.ui.viewmodels.MainFragmentViewModel
@@ -21,7 +21,7 @@ class MainFragment : Fragment() {
         fun newInstance() = MainFragment()
     }
 
-    private val viewModel by lazy { ViewModelProvider(this)[MainFragmentViewModel::class.java] }
+    private val viewModel: MainFragmentViewModel by viewModels()
 
 
     override fun onCreateView(
@@ -38,7 +38,7 @@ class MainFragment : Fragment() {
     }
 
     private fun setupView(view: View) {
-        viewModel.wasViewLoaded().observe(this, {
+        viewModel.wasViewLoaded().observe(viewLifecycleOwner, {
             if (!it) {
                 viewModel.viewDidLoad()
                 view.findViewById<ScrollView>(R.id.scrollLayout).postDelayed({
@@ -61,10 +61,10 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun viewBookings(date: Int = -1, month: Int) {
+    private fun viewBookings(date: Int = -1, month: Int, year: Int = 2021) {
         if (activity == null) return
-        activity!!.supportFragmentManager.beginTransaction()
-            .replace(R.id.container, ListOfBookingsFragment.newInstance(date, month))
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.container, ListOfBookingsFragment.newInstance(date, month, year))
             .addToBackStack(null)
             .commit()
     }

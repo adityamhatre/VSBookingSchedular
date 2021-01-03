@@ -1,6 +1,7 @@
 package com.adityamhatre.bookingscheduler.service
 
 import com.adityamhatre.bookingscheduler.Application
+import com.adityamhatre.bookingscheduler.dtos.AppDateTime
 import com.adityamhatre.bookingscheduler.dtos.BookingDetails
 import com.adityamhatre.bookingscheduler.enums.Accommodation
 import com.adityamhatre.bookingscheduler.googleapi.CalendarService
@@ -38,7 +39,7 @@ class BookingsService {
         TODO("Not yet implemented")
     }
 
-    fun checkAvailability(timeMin: String, timeMax: String): List<Accommodation> {
+    fun checkAvailability(timeMin: AppDateTime, timeMax: AppDateTime): List<Accommodation> {
         return calendarService.checkAvailability(timeMin, timeMax)
     }
 }

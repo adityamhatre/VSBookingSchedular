@@ -31,6 +31,7 @@
             android:id="@+id/_9am"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:checked="true"
             android:text="@string/_9_00_am" />
 
         <RadioButton

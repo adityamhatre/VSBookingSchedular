@@ -2,7 +2,11 @@ package com.adityamhatre.bookingscheduler.googleapi
 
 import android.accounts.Account
 import android.content.Context
+import com.adityamhatre.bookingscheduler.Application
+import com.adityamhatre.bookingscheduler.R
+import com.adityamhatre.bookingscheduler.dtos.AppDateTime
 import com.adityamhatre.bookingscheduler.enums.Accommodation
+import com.adityamhatre.bookingscheduler.utils.TimeStampConverter
 import com.google.api.client.extensions.android.http.AndroidHttp.newCompatibleTransport
 import com.google.api.client.extensions.android.json.AndroidJsonFactory
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
@@ -23,7 +27,7 @@ class CalendarService(context: Context, account: Account) {
     private val calendarClient = Calendar.Builder(
         newCompatibleTransport(), AndroidJsonFactory.getDefaultInstance(),
         credential
-    ).build()
+    ).setApplicationName(Application.getApplicationContext().getString(R.string.app_name)).build()
 
     fun getCalendarWithId(id: String): com.google.api.services.calendar.model.Calendar {
         return calendarClient.Calendars().get(id).execute()
@@ -98,19 +102,30 @@ class CalendarService(context: Context, account: Account) {
         ).execute()
     }
 
-    fun checkAvailability(timeMin: String, timeMax: String): List<Accommodation> {
+    fun checkAvailability(
+        timeMin: AppDateTime,
+        timeMax: AppDateTime
+    ): List<Accommodation> {
         return calendarClient.freebusy()
             .query(
                 FreeBusyRequest()
                     .setItems(
                         Accommodation.all().map { FreeBusyRequestItem().setId(it.calendarId) })
-                    .setTimeMin(DateTime(timeMin))
-                    .setTimeMax(DateTime(timeMax))
+                    .setTimeMin(DateTime(with(timeMin) {
+                        TimeStampConverter.convertToTimestampString(
+                            year, month, date, hour, minute
+                        )
+                    }))
+                    .setTimeMax(DateTime(with(timeMax) {
+                        TimeStampConverter.convertToTimestampString(
+                            year, month, date, hour, minute
+                        )
+                    }))
                     .setTimeZone("UTC+05:30")
             )
             .execute()
             .calendars
             .filterValues { value -> value.busy.isEmpty() }
-            .map { (key,_)-> Accommodation.from(key) }
+            .map { (key, _) -> Accommodation.from(key) }
     }
 }

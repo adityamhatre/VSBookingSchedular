@@ -5,27 +5,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.adityamhatre.bookingscheduler.R
+import com.adityamhatre.bookingscheduler.dtos.AppDate
 import com.adityamhatre.bookingscheduler.ui.viewmodels.ListOfBookingsViewModel
 import com.nambimobile.widgets.efab.FabOption
 import kotlinx.coroutines.launch
 
 private const val DATE = "date"
 private const val MONTH = "month"
+private const val YEAR = "year"
 
 class ListOfBookingsFragment : Fragment() {
 
-    private val viewModel by lazy { ViewModelProvider(this)[ListOfBookingsViewModel::class.java] }
+    private val viewModel: ListOfBookingsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             with(it) {
-                viewModel.date = getInt(DATE, -1)
-                viewModel.month = getInt(MONTH, -1)
+                val date = getInt(DATE, -1)
+                val month = getInt(MONTH, -1)
+                val year = getInt(YEAR, -1)
+                viewModel.bookingsOn = AppDate(date, month, year)
             }
         }
     }
@@ -39,7 +43,7 @@ class ListOfBookingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (viewModel.nothingInitialized()) {
+        if (viewModel.bookingsOn.nothingInitialized()) {
             return
         }
 
@@ -49,11 +53,22 @@ class ListOfBookingsFragment : Fragment() {
 
     private fun setupFab(view: View) {
         val newBooking = view.findViewById<FabOption>(R.id.new_booking)
-        if (viewModel.isForMonth()) {
+        if (viewModel.bookingsOn.isForMonth()) {
             newBooking.fabOptionEnabled = false
-        } else if (viewModel.isForDate()) {
+        } else if (viewModel.bookingsOn.isForDate()) {
             newBooking.setOnClickListener {
-                TimeFrameInputDialog(viewModel.date, viewModel.month, year=2021).show(activity?.supportFragmentManager!!, null)
+                requireActivity().supportFragmentManager
+                    .beginTransaction()
+                    .replace(
+                        R.id.container,
+                        TimeFrameInput.newInstance(
+                            viewModel.bookingsOn.date,
+                            viewModel.bookingsOn.month,
+                            year = 2021
+                        )
+                    )
+                    .addToBackStack(null)
+                    .commit()
             }
         }
 
@@ -70,11 +85,12 @@ class ListOfBookingsFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(date: Int = -1, month: Int) =
+        fun newInstance(date: Int = -1, month: Int, year: Int = 2021) =
             ListOfBookingsFragment().apply {
                 arguments = Bundle().apply {
                     putInt(DATE, date)
                     putInt(MONTH, month)
+                    putInt(YEAR, year)
                 }
             }
 
