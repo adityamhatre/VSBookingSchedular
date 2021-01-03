@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/check_in_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <DatePicker
+        android:id="@+id/check_out_date_picker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:calendarViewShown="false"
+        android:datePickerMode="spinner"
+        app:layout_constraintTop_toBottomOf="@+id/check_in_date" />
+
+    <RadioGroup
+        android:id="@+id/check_out_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/check_out_date_picker">
+
+        <RadioButton
+            android:id="@+id/_9am"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/_9_00_am" />
+
+        <RadioButton
+            android:id="@+id/_5pm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/_5_00_pm" />
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/check_availability"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/check_availability"
+        app:layout_constraintTop_toBottomOf="@+id/check_out_time" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

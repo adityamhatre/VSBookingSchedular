@@ -1,4 +1,4 @@
-package com.adityamhatre.bookingscheduler.ui.main
+package com.adityamhatre.bookingscheduler.ui.views
 
 import android.os.Bundle
 import android.view.LayoutInflater

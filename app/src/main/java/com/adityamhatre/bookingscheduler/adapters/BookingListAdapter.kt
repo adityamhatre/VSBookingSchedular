@@ -48,7 +48,7 @@ class BookingListAdapter(private val bookingDetailsList: List<BookingDetails>) :
 private fun Instant.toHumanDate(): String {
     val localDateTime = Date.from(this)
         .toInstant()
-        .atZone(ZoneId.systemDefault())
+        .atZone(ZoneId.of(ZoneId.SHORT_IDS["IST"]))
         .toLocalDateTime()
 
     val day =

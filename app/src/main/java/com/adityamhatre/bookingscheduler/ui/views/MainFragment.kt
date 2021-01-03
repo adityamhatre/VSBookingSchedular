@@ -1,4 +1,4 @@
-package com.adityamhatre.bookingscheduler.ui.main
+package com.adityamhatre.bookingscheduler.ui.views
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,8 +9,10 @@ import android.widget.ScrollView
 import androidx.core.view.children
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.customViews.MonthView
+import com.adityamhatre.bookingscheduler.ui.viewmodels.MainFragmentViewModel
 import java.util.*
 
 class MainFragment : Fragment() {
@@ -18,6 +20,8 @@ class MainFragment : Fragment() {
     companion object {
         fun newInstance() = MainFragment()
     }
+
+    private val viewModel by lazy { ViewModelProvider(this)[MainFragmentViewModel::class.java] }
 
 
     override fun onCreateView(
@@ -30,19 +34,23 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupView(view)
     }
 
     private fun setupView(view: View) {
-        view.findViewById<ScrollView>(R.id.scrollLayout).postDelayed({
-            view.findViewById<ScrollView>(R.id.scrollLayout)
-                .smoothScrollTo(
-                    0,
-                    view.findViewById<LinearLayout>(R.id.yearList)[Calendar.getInstance()
-                        .get(Calendar.MONTH)].top
-                )
-        }, 500)
+        viewModel.wasViewLoaded().observe(this, {
+            if (!it) {
+                viewModel.viewDidLoad()
+                view.findViewById<ScrollView>(R.id.scrollLayout).postDelayed({
+                    view.findViewById<ScrollView>(R.id.scrollLayout)
+                        .smoothScrollTo(
+                            0,
+                            view.findViewById<LinearLayout>(R.id.yearList)[Calendar.getInstance()
+                                .get(Calendar.MONTH)].top
+                        )
+                }, 500)
+            }
+        })
 
 
         view.findViewById<LinearLayout>(R.id.yearList).children.forEachIndexed { i, it ->

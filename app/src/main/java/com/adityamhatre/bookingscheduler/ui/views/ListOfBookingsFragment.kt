@@ -1,29 +1,31 @@
-package com.adityamhatre.bookingscheduler.ui.main
+package com.adityamhatre.bookingscheduler.ui.views
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import com.adityamhatre.bookingscheduler.MainActivity
 import com.adityamhatre.bookingscheduler.R
-import com.adityamhatre.bookingscheduler.adapters.BookingListAdapter
-import com.adityamhatre.bookingscheduler.dtos.BookingDetails
+import com.adityamhatre.bookingscheduler.ui.viewmodels.ListOfBookingsViewModel
+import com.nambimobile.widgets.efab.FabOption
+import kotlinx.coroutines.launch
 
 private const val DATE = "date"
 private const val MONTH = "month"
 
 class ListOfBookingsFragment : Fragment() {
-    private var date: Int = -1
-    private var month: Int = -1
+
+    private val viewModel by lazy { ViewModelProvider(this)[ListOfBookingsViewModel::class.java] }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             with(it) {
-                date = getInt(DATE, -1)
-                month = getInt(MONTH, -1)
+                viewModel.date = getInt(DATE, -1)
+                viewModel.month = getInt(MONTH, -1)
             }
         }
     }
@@ -37,26 +39,33 @@ class ListOfBookingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (date == -1 && month == -1) {
+        if (viewModel.nothingInitialized()) {
             return
         }
 
-        /*val bookingDetailsList =
-            (activity as MainActivity).bookingDetailsService.getBookingDetailsFor(date, month)*/
-        val bookingDetailsList =
-            (activity as MainActivity).bookingDetailsService.getAllBookings()
-
-        isAnyAccommodationAvailable(bookingDetailsList)
-        setupRecyclerView(view, bookingDetailsList)
+//        setupRecyclerView(view)
+        setupFab(view)
     }
 
-    private fun isAnyAccommodationAvailable(bookingDetailsList: List<BookingDetails>) {
+    private fun setupFab(view: View) {
+        val newBooking = view.findViewById<FabOption>(R.id.new_booking)
+        if (viewModel.isForMonth()) {
+            newBooking.fabOptionEnabled = false
+        } else if (viewModel.isForDate()) {
+            newBooking.setOnClickListener {
+                TimeFrameInputDialog(viewModel.date, viewModel.month, year=2021).show(activity?.supportFragmentManager!!, null)
+            }
+        }
 
     }
 
-    private fun setupRecyclerView(view: View, bookingDetailsList: List<BookingDetails>) {
+
+    private fun setupRecyclerView(view: View) {
         val bookingRecyclerView = view.findViewById<RecyclerView>(R.id.booking_list)
-        bookingRecyclerView.adapter = BookingListAdapter(bookingDetailsList)
+        viewLifecycleOwner.lifecycleScope.launch {
+            bookingRecyclerView.adapter = viewModel.getBookingListAdapter()
+        }
+
     }
 
     companion object {

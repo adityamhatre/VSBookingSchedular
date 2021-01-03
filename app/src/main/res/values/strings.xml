@@ -1,5 +1,18 @@
 <resources>
     <string name="app_name">Booking Scheduler</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="room_1_id">q1vcg41c48hrpek2tji6a24jc4@group.calendar.google.com</string>
+    <string name="room_2_id">nv20hanedldr9v1l9gko7eihjs@group.calendar.google.com</string>
+    <string name="room_3_id">n9v78nc00adk6lchan9qbs7lds@group.calendar.google.com</string>
+    <string name="room_4_id">7nr0afi1cenm9tj7be11n55jgo@group.calendar.google.com</string>
+    <string name="bungalow_3_1_id">u5vt7p7fspjc5qel815nbr3mvo@group.calendar.google.com</string>
+    <string name="special_room_1_id">s1d2cqeftf9riharcg5uu04mi8@group.calendar.google.com</string>
+    <string name="special_room_2_id">nhmrthio3h2fdrv9rba54aiqcg@group.calendar.google.com</string>
+    <string name="nivant_id">82qt7lqduchvdaim7biniiu2hg@group.calendar.google.com</string>
+    <string name="dormitory_1">rsjn35bm24ud5na1r8ii69cfr4@group.calendar.google.com</string>
+    <string name="dormitory_2">3pgn4jqb8fc04oh8foc2gmjego@group.calendar.google.com</string>
+    <string name="_9_00_am">9:00 AM</string>
+    <string name="_5_00_pm">5:00 PM</string>
+    <string name="check_availability">Check availability</string>
+
 </resources>

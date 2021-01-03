@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.ListOfBookingsFragment">
+    tools:context=".ui.views.ListOfBookingsFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/booking_list"
@@ -19,6 +19,7 @@
 
         <com.nambimobile.widgets.efab.ExpandableFab
             android:layout_width="wrap_content"
+            android:id="@+id/fab_menu"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_marginEnd="16dp"
@@ -28,7 +29,7 @@
             app:label_visibleToHiddenAnimationDurationMs="100" />
 
         <com.nambimobile.widgets.efab.FabOption
-            android:id="@+id/newBooking"
+            android:id="@+id/new_booking"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_icon="@drawable/ic_baseline_add_24"
@@ -39,8 +40,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_icon="@drawable/eye"
+            android:id="@+id/view_all_bookings"
             app:fab_orientation="portrait"
-            app:label_text="View Bookings" />
+            app:label_text="View all bookings" />
 
         <com.nambimobile.widgets.efab.FabOption
             android:layout_width="wrap_content"
