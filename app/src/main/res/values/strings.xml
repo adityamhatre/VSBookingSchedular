@@ -28,5 +28,8 @@
     <string name="no_advance_payment">No Advance Payment</string>
     <string name="amount">Amount</string>
     <string name="book">Book</string>
+    <string name="select_all">Select All</string>
+    <string name="bungalow_5_1">Bungalow (5 + 1)</string>
+    <string name="bookings_on">Loading Bookings on</string>
 
 </resources>

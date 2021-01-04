@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.dtos.AppDateTime
 import com.adityamhatre.bookingscheduler.enums.Accommodation
-import com.adityamhatre.bookingscheduler.ui.viewmodels.TimeFrameInputDialogViewModel
+import com.adityamhatre.bookingscheduler.ui.viewmodels.TimeFrameInputViewModel
 import com.adityamhatre.bookingscheduler.utils.TwoDigitFormatter
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -23,7 +23,7 @@ private const val MONTH = "month"
 private const val YEAR = "year"
 
 class TimeFrameInputFragment : Fragment() {
-    private val viewModel: TimeFrameInputDialogViewModel by viewModels()
+    private val viewModel: TimeFrameInputViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -140,8 +140,12 @@ class TimeFrameInputFragment : Fragment() {
                     viewModel.checkOutDateTime
                 ).toSet()
 
+
                 Accommodation.all().forEachIndexed { i, it ->
                     val checkBox = CheckBox(requireContext())
+                    viewModel.accommodationCheckBoxIds.add(View.generateViewId())
+                    checkBox.id = viewModel.accommodationCheckBoxIds.last()
+
                     checkBox.text = it.readableName
                     checkBox.isEnabled = availableAccommodations.contains(it)
                     checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -161,9 +165,58 @@ class TimeFrameInputFragment : Fragment() {
 
             }.invokeOnCompletion {
                 view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.GONE
+                setupSelectAllButton(view)
+                setupBungalow51Button(view)
                 btn.isEnabled = true
             }
 
+        }
+    }
+
+    private fun setupSelectAllButton(view: View) {
+        val selectAllButton = view.findViewById<Button>(R.id.select_all)
+        val selectAllText = "Select All"
+        val deselectAllText = "Deselect All"
+        selectAllButton.visibility = View.VISIBLE
+        selectAllButton.isEnabled = viewModel.accommodationCheckBoxIds.any {
+            val checkBox = view.findViewById<CheckBox>(it)
+            checkBox.isEnabled
+        }
+        selectAllButton.setOnClickListener {
+            viewModel.selectedAllAccommodations = !viewModel.selectedAllAccommodations
+            if (!viewModel.selectedAllAccommodations) {
+                viewModel.bungalow51Selected = false
+            }
+            if (viewModel.selectedAllAccommodations) {
+                selectAllButton.text = deselectAllText
+            } else {
+                selectAllButton.text = selectAllText
+            }
+            viewModel.accommodationCheckBoxIds.filter {
+                view.findViewById<CheckBox>(it).isEnabled
+            }.map { view.findViewById<CheckBox>(it) }
+                .forEach {
+                    it.isChecked = viewModel.selectedAllAccommodations
+                }
+        }
+    }
+
+    private fun setupBungalow51Button(view: View) {
+        val bungalowButton = view.findViewById<Button>(R.id.bungalow5_1)
+        bungalowButton.visibility = View.VISIBLE
+        bungalowButton.isEnabled = viewModel.accommodationCheckBoxIds.subList(0, 3).all {
+            val checkBox = view.findViewById<CheckBox>(it)
+            checkBox.isEnabled
+        }
+        bungalowButton.setOnClickListener {
+            viewModel.bungalow51Selected = !viewModel.bungalow51Selected
+
+            viewModel.accommodationCheckBoxIds.subList(0, 3).filter {
+                view.findViewById<CheckBox>(it).isEnabled
+            }.map { view.findViewById<CheckBox>(it) }
+                .forEach {
+                    it.isChecked = viewModel.bungalow51Selected
+                }
         }
     }
 

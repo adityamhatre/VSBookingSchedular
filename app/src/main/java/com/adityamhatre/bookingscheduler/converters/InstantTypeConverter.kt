@@ -1,4 +1,4 @@
-package com.adityamhatre.bookingscheduler.googleapi
+package com.adityamhatre.bookingscheduler.converters
 
 import com.google.gson.*
 import java.lang.reflect.Type

@@ -102,7 +102,7 @@
         android:id="@+id/results"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/next"
         app:layout_constraintTop_toBottomOf="@+id/guideline40">
 
         <ProgressBar
@@ -116,19 +116,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline50"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent=".5" />
 
         <ScrollView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline50"
-            app:layout_constraintBottom_toTopOf="@+id/next"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
@@ -143,9 +137,9 @@
         <ScrollView
             android:layout_width="0dp"
             android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/guideline50"
-            app:layout_constraintBottom_toTopOf="@+id/next"
             app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
@@ -158,11 +152,40 @@
         </ScrollView>
 
         <Button
-            android:id="@+id/next"
-            android:layout_width="match_parent"
+            android:id="@+id/bungalow5_1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="@string/proceed"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            android:text="@string/bungalow_5_1"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline50"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/select_all"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/select_all"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/guideline50" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline50"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".5" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="@string/proceed"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

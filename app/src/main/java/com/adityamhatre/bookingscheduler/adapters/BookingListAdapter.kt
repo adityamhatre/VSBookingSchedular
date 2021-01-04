@@ -1,12 +1,15 @@
 package com.adityamhatre.bookingscheduler.adapters
 
+import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.text.bold
 import androidx.recyclerview.widget.RecyclerView
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.dtos.BookingDetails
+import com.adityamhatre.bookingscheduler.enums.Accommodation
 import java.time.Instant
 import java.time.ZoneId
 import java.util.*
@@ -33,14 +36,36 @@ class BookingListAdapter(private val bookingDetailsList: List<BookingDetails>) :
         fun bind(position: Int) {
             val bookingDetails = bookingDetailsList[position]
 
-            (itemView.findViewById<TextView>(R.id.text1)).text = bookingDetails.bookingMainPerson
+            val title =
+                "${bookingDetails.bookingMainPerson} (${bookingDetails.totalNumberOfPeople} people)"
+            (itemView.findViewById<TextView>(R.id.title)).text = title
 
-            val timing =
-                "${bookingDetails.checkIn.toHumanDate()} to ${bookingDetails.checkOut.toHumanDate()}"
-            (itemView.findViewById<TextView>(R.id.timing)).text = timing
 
-            (itemView.findViewById<TextView>(R.id.accommodations)).text =
-                bookingDetails.accommodations.joinToString { it.readableName }
+            val checkInTiming = SpannableStringBuilder()
+                .bold { append("Check in:  ") }
+                .append(bookingDetails.checkIn.toHumanDate())
+            val checkOutTiming = SpannableStringBuilder()
+                .bold { append("Check out: ") }
+                .append(bookingDetails.checkOut.toHumanDate())
+            (itemView.findViewById<TextView>(R.id.check_in_timing)).text = checkInTiming
+            (itemView.findViewById<TextView>(R.id.check_out_timing)).text = checkOutTiming
+
+            val accommodations =
+                SpannableStringBuilder()
+                    .bold { append("Accommodations: ") }
+                    .append(
+                        Accommodation.bungalow51List(bookingDetails.accommodations)
+                            .joinToString { it.readableName })
+            (itemView.findViewById<TextView>(R.id.accommodations)).text = accommodations
+
+            (itemView.findViewById<TextView>(R.id.advance_payment_info)).text =
+                bookingDetails.advancePaymentInfo.toSpannableString()
+
+            val bookedBy = SpannableStringBuilder()
+                .bold { append("Booked by ") }
+                .append(bookingDetails.bookedBy.readableName)
+
+            (itemView.findViewById<TextView>(R.id.booked_by)).text = bookedBy
         }
     }
 }

@@ -32,9 +32,11 @@ class CalendarService(context: Context, account: Account) {
         credential
     ).setApplicationName(Application.getApplicationContext().getString(R.string.app_name)).build()
 
-    fun getCalendarWithId(id: String): com.google.api.services.calendar.model.Calendar {
-        return calendarClient.Calendars().get(id).execute()
-    }
+    fun getBookingsForMonth(
+        calendarId: String,
+        month: Int,
+        year: Int
+    ) = getBookingsForDate(calendarId, 1, month, year)
 
     fun getBookingsForDate(
         calendarId: String,

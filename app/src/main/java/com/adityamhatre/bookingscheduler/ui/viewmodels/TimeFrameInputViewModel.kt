@@ -9,7 +9,10 @@ import com.adityamhatre.bookingscheduler.service.BookingsService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class TimeFrameInputDialogViewModel : ViewModel() {
+class TimeFrameInputViewModel : ViewModel() {
+    val accommodationCheckBoxIds = mutableListOf<Int>()
+    var selectedAllAccommodations = false
+    var bungalow51Selected = false
     private val selectedAccommodations = MutableLiveData<Set<Accommodation>>(mutableSetOf())
     fun addAccommodation(accommodation: Accommodation) {
         val value: HashSet<Accommodation> =

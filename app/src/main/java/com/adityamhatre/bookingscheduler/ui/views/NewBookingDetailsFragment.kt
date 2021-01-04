@@ -10,6 +10,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.adityamhatre.bookingscheduler.Application
 import com.adityamhatre.bookingscheduler.MainActivity
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.dtos.*
@@ -50,7 +51,7 @@ class NewBookingDetailsFragment(
         val bookingScheduleText =
             "From: ${viewModel.checkInDateTime.toHumanFormat()}" +
                     "\nTo: ${viewModel.checkOutDateTime.toHumanFormat()}" +
-                    "\nIn ${viewModel.accommodationSet.joinToString { it.readableName }}"
+                    "\nIn ${Accommodation.bungalow51List(viewModel.accommodationSet).joinToString { it.readableName }}"
         view.findViewById<TextView>(R.id.booking_schedule).text = bookingScheduleText
 
 
@@ -168,7 +169,7 @@ class NewBookingDetailsFragment(
                         checkOut = viewModel.checkOutDateTime.toInstant(),
                         bookingMainPerson = viewModel.bookingFor,
                         totalNumberOfPeople = viewModel.numberOfPeople,
-                        bookedBy = ApprovedPerson.ADITYA_MHATRE,
+                        bookedBy = ApprovedPerson.findByEmail(Application.account.name),
                         advancePaymentInfo = AdvancePayment(
                             viewModel.advancePaymentRequired,
                             viewModel.advancePaymentAmount,

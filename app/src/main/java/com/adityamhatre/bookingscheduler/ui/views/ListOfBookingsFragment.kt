@@ -11,8 +11,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.adityamhatre.bookingscheduler.R
+import com.adityamhatre.bookingscheduler.customViews.MonthView
 import com.adityamhatre.bookingscheduler.dtos.AppDate
 import com.adityamhatre.bookingscheduler.ui.viewmodels.ListOfBookingsViewModel
+import com.adityamhatre.bookingscheduler.utils.TwoDigitFormatter
+import com.nambimobile.widgets.efab.ExpandableFabLayout
 import com.nambimobile.widgets.efab.FabOption
 import kotlinx.coroutines.launch
 
@@ -48,32 +51,80 @@ class ListOfBookingsFragment : Fragment() {
         if (viewModel.bookingsOn.nothingInitialized()) {
             return
         }
-
+        setupTitle(view)
         setupRecyclerView(view)
         setupFab(view)
     }
 
-    private fun setupFab(view: View) {
-        val newBooking = view.findViewById<FabOption>(R.id.new_booking)
+    private fun setupTitle(view: View) {
+        val noBookingsView = view.findViewById<TextView>(R.id.emptyView)
+        var dateString = ""
+        var noBookingString = noBookingsView.text.toString()
+
         if (viewModel.bookingsOn.isForMonth()) {
-            newBooking.fabOptionEnabled = false
+            dateString =
+                MonthView.monthName(viewModel.bookingsOn.month) + " " + viewModel.bookingsOn.year
+
+            noBookingString = "No bookings for $dateString"
         } else if (viewModel.bookingsOn.isForDate()) {
-            newBooking.setOnClickListener {
-                requireActivity().supportFragmentManager
-                    .beginTransaction()
-                    .replace(
-                        R.id.container,
-                        TimeFrameInputFragment.newInstance(
-                            viewModel.bookingsOn.date,
-                            viewModel.bookingsOn.month,
-                            year = 2021
-                        )
-                    )
-                    .addToBackStack(null)
-                    .commit()
-            }
+            dateString = "${TwoDigitFormatter.toTwoDigits(viewModel.bookingsOn.date)}/${
+                TwoDigitFormatter.toTwoDigits(viewModel.bookingsOn.month)
+            }/${viewModel.bookingsOn.year}"
+
+            noBookingString = noBookingString.replace("selected date", dateString)
         }
 
+        val title = "Loading bookings for $dateString..."
+        view.findViewById<TextView>(R.id.bookings_on).text = title
+
+        noBookingsView.text = noBookingString
+    }
+
+    private fun setupFab(view: View) {
+        val newBooking = view.findViewById<FabOption>(R.id.new_booking)
+        val viewBookingsInMonth = view.findViewById<FabOption>(R.id.view_all_bookings_in_month)
+
+        if (viewModel.bookingsOn.isForMonth()) {
+            view.findViewById<ExpandableFabLayout>(R.id.fab_layout).visibility = View.GONE
+            newBooking.fabOptionEnabled = false
+            return
+        }
+
+
+        newBooking.setOnClickListener {
+            requireActivity().supportFragmentManager
+                .beginTransaction()
+                .replace(
+                    R.id.container,
+                    TimeFrameInputFragment.newInstance(
+                        viewModel.bookingsOn.date,
+                        viewModel.bookingsOn.month,
+                        year = 2021
+                    )
+                )
+                .addToBackStack(null)
+                .commit()
+        }
+
+        viewBookingsInMonth.setOnClickListener {
+            requireActivity().supportFragmentManager
+                .beginTransaction()
+                .remove(this)
+                .commit()
+            requireActivity().supportFragmentManager.popBackStack()
+
+            requireActivity().supportFragmentManager
+                .beginTransaction()
+                .replace(
+                    R.id.container,
+                    newInstance(
+                        month = viewModel.bookingsOn.month,
+                        year = viewModel.bookingsOn.year
+                    )
+                )
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
 
@@ -83,9 +134,23 @@ class ListOfBookingsFragment : Fragment() {
             view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.VISIBLE
             bookingRecyclerView.adapter = viewModel.getBookingListAdapter()
         }.invokeOnCompletion {
+            bookingRecyclerView.postDelayed({
+                bookingRecyclerView.smoothScrollToPosition(
+                    bookingRecyclerView.adapter?.itemCount ?: 0
+                )
+            }, 250)
+
             view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.GONE
             view.findViewById<TextView>(R.id.emptyView).visibility =
                 if (bookingRecyclerView.adapter?.itemCount == 0) View.VISIBLE else View.GONE
+
+            val titleView = view.findViewById<TextView>(R.id.bookings_on)
+            titleView.visibility =
+                if (bookingRecyclerView.adapter?.itemCount != 0) View.VISIBLE else View.GONE
+            if (bookingRecyclerView.adapter?.itemCount != 0) {
+                titleView.text = titleView.text.toString()
+                    .replace("Loading b", "${bookingRecyclerView.adapter?.itemCount} B")
+            }
         }
 
     }

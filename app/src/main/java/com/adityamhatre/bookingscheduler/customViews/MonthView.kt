@@ -73,7 +73,7 @@ class MonthView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
             var weekFilled = false
 
             var dateIndex = if (i == 0) firstDayOfMonthIndex else 0
-            while (dateIndex < 7 && currentDate <= maxDaysInThisMonth()) {
+            while (dateIndex < 7 && currentDate <= maxDaysInThisMonth(month, year)) {
                 weekFilled = true
                 datesLookup[currentDate] = Pair(i, dateIndex)
 
@@ -99,16 +99,6 @@ class MonthView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         }
     }
 
-    private fun maxDaysInThisMonth(): Int {
-        val leap = if (year % 4 == 0) {
-            if (year % 100 == 0) {
-                year % 400 == 0
-            } else true
-        } else false
-
-        return if (month == 2) if (leap) 29 else 28
-        else if (month in intArrayOf(1, 3, 5, 7, 8, 10, 12)) 31 else 30
-    }
 
     private fun getMonthName(): String {
         return when (month) {
@@ -133,4 +123,35 @@ class MonthView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         view.findViewById<CardView>(R.id.month_card).setOnClickListener(listener)
     }
 
+    companion object {
+        fun maxDaysInThisMonth(month: Int, year: Int): Int {
+            val leap = if (year % 4 == 0) {
+                if (year % 100 == 0) {
+                    year % 400 == 0
+                } else true
+            } else false
+
+            return if (month == 2) if (leap) 29 else 28
+            else if (month in intArrayOf(1, 3, 5, 7, 8, 10, 12)) 31 else 30
+        }
+
+        fun monthName(month: Int): String {
+            return when (month) {
+                1 -> "January"
+                2 -> "February"
+                3 -> "March"
+                4 -> "April"
+                5 -> "May"
+                6 -> "June"
+                7 -> "July"
+                8 -> "August"
+                9 -> "September"
+                10 -> "October"
+                11 -> "November"
+                12 -> "December"
+                else -> ""
+            }
+        }
+
+    }
 }

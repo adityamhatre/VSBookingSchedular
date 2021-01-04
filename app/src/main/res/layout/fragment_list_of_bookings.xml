@@ -6,6 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".ui.views.ListOfBookingsFragment">
 
+    <TextView
+        android:id="@+id/bookings_on"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="@string/bookings_on"
+        android:textAlignment="center"
+        android:textColor="@color/title_color"
+        android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ProgressBar
         android:id="@+id/loading_icon"
         android:layout_width="wrap_content"
@@ -20,14 +31,17 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/booking_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        app:layoutManager="LinearLayoutManager" />
+        app:layoutManager="LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bookings_on" />
 
     <TextView
         android:id="@+id/emptyView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="8dp"
         android:text="@string/no_booking_for_selected_date_create_one_by_clicking_the_button_below"
         android:textAlignment="center"
         android:textSize="24sp"
@@ -38,6 +52,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.nambimobile.widgets.efab.ExpandableFabLayout
+        android:id="@+id/fab_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -61,20 +76,21 @@
             app:label_text="New Booking" />
 
         <com.nambimobile.widgets.efab.FabOption
-            android:id="@+id/view_all_bookings"
+            android:id="@+id/view_all_bookings_in_month"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_icon="@drawable/eye"
             app:fab_orientation="portrait"
-            app:label_text="View all bookings" />
+            app:label_text="Bookings for this month" />
 
+        <!--
         <com.nambimobile.widgets.efab.FabOption
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_icon="@drawable/log"
             app:fab_orientation="portrait"
             app:label_text="View Log" />
-
+        -->
 
     </com.nambimobile.widgets.efab.ExpandableFabLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
