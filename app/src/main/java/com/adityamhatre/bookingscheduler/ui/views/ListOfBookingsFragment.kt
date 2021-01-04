@@ -61,7 +61,7 @@ class ListOfBookingsFragment : Fragment() {
                     .beginTransaction()
                     .replace(
                         R.id.container,
-                        TimeFrameInput.newInstance(
+                        TimeFrameInputFragment.newInstance(
                             viewModel.bookingsOn.date,
                             viewModel.bookingsOn.month,
                             year = 2021

@@ -24,7 +24,7 @@ import kotlin.random.Random
 
 class GoogleSignInFragment : Fragment() {
     private val TAG = "GoogleSignInFragment"
-    private val SIGN_IN_INTENT_RC: Int = Random.nextInt()
+    private val SIGN_IN_INTENT_RC: Int = Random.nextInt(1000)
     private lateinit var googleSignInClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {

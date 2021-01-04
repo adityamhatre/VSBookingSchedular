@@ -45,8 +45,7 @@ enum class Accommodation(val readableName: String, val calendarId: String) {
     companion object {
         fun all() = values().map { it }
         fun from(key: String) = all().first { key.startsWith(it.calendarId) }
+        fun byReadableName(text: String) = all().first { it.readableName == text }
     }
-
-    fun asList() = listOf(this)
 
 }

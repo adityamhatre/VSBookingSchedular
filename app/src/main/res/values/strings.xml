@@ -14,5 +14,12 @@
     <string name="_9_00_am">9:00 AM</string>
     <string name="_5_00_pm">5:00 PM</string>
     <string name="check_availability">Check availability</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="_5_30_pm">5:30 PM</string>
+    <string name="_9_30_am">9:30 AM</string>
+    <string name="check_in_time">Check in time:</string>
+    <string name="select_check_out_date_and_time">Select check out date and time</string>
+    <string name="proceed">Proceed</string>
 
 </resources>
