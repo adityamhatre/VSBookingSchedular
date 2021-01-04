@@ -5,13 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.content.ContextCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.adityamhatre.bookingscheduler.MainActivity
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.dtos.*
 import com.adityamhatre.bookingscheduler.enums.Accommodation
 import com.adityamhatre.bookingscheduler.ui.viewmodels.NewBookingDetailsViewModel
+import com.ebanx.swipebtn.SwipeButton
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
@@ -27,13 +32,15 @@ class NewBookingDetailsFragment(
     private val viewModel: NewBookingDetailsViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.checkInDateTime = checkInDateTime
+        viewModel.checkOutDateTime = checkOutDateTime
+        viewModel.accommodationSet = accommodationSet
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_new_booking_details, container, false)
     }
 
@@ -41,24 +48,39 @@ class NewBookingDetailsFragment(
         super.onViewCreated(view, savedInstanceState)
 
         val bookingScheduleText =
-            "From: ${checkInDateTime.toHumanFormat()}" +
-                    "\nTo: ${checkOutDateTime.toHumanFormat()}" +
-                    "\nIn ${accommodationSet.joinToString { it.readableName }}"
+            "From: ${viewModel.checkInDateTime.toHumanFormat()}" +
+                    "\nTo: ${viewModel.checkOutDateTime.toHumanFormat()}" +
+                    "\nIn ${viewModel.accommodationSet.joinToString { it.readableName }}"
         view.findViewById<TextView>(R.id.booking_schedule).text = bookingScheduleText
 
 
-        val paymentType = view.findViewById<AutoCompleteTextView>(R.id.payment_type)
-        val items = PaymentType.values().map { it.name.toTitleCase() }
-        val adapter = ArrayAdapter(requireContext(), R.layout.list_item, items)
-        paymentType.setAdapter(adapter)
-        paymentType.setText(items[0])
+        val paymentType = view.findViewById<MaterialAutoCompleteTextView>(R.id.payment_type)
+        val paymentTypeContainer = view.findViewById<TextInputLayout>(R.id.payment_type_container)
+        paymentType.doOnTextChanged { text, _, _, _ ->
+            viewModel.paymentType = PaymentType.fromTitleCase(text.toString())
+        }
+        paymentType.setAdapter(viewModel.getPaymentTypeAdapter(requireContext()))
+        paymentType.setText(paymentType.adapter.getItem(0).toString(), false)
 
         val bookingForEditText = view.findViewById<TextInputEditText>(R.id.booking_for)
         val bookingForContainer = view.findViewById<TextInputLayout>(R.id.booking_for_container)
+        bookingForEditText.doOnTextChanged { text, _, _, _ ->
+            viewModel.bookingFor = text.toString()
+            viewModel.validate()
+        }
+
 
         val numberOfPeopleEditText = view.findViewById<TextInputEditText>(R.id.number_of_people)
         val numberOfPeopleContainer =
             view.findViewById<TextInputLayout>(R.id.number_of_people_container)
+        numberOfPeopleEditText.doOnTextChanged { text, _, _, _ ->
+            if (text.toString().isNotBlank()) {
+                viewModel.numberOfPeople = text.toString().toInt()
+            } else {
+                viewModel.numberOfPeople = -1
+            }
+            viewModel.validate()
+        }
 
         val advanceOrNotAdvanceRadioGroup =
             view.findViewById<RadioGroup>(R.id.advance_or_not_advance_payment)
@@ -67,58 +89,90 @@ class NewBookingDetailsFragment(
             view.findViewById<TextInputEditText>(R.id.advance_payment_amount)
         val advanceAmountContainer =
             view.findViewById<TextInputLayout>(R.id.advance_payment_amount_container)
+        advanceAmountEditText.doOnTextChanged { text, _, _, _ ->
+            if (text.toString().isNotBlank()) {
+                viewModel.advancePaymentAmount = text.toString().toInt()
+            } else {
+                viewModel.advancePaymentAmount = -1
+            }
+            viewModel.validate()
+        }
 
-
-        var advancePaymentRequired = false
         advanceOrNotAdvanceRadioGroup.setOnCheckedChangeListener { _, btnId ->
             if (btnId == R.id.advance_payment) {
                 advanceAmountContainer.visibility = View.VISIBLE
-                advancePaymentRequired = true
+                paymentTypeContainer.visibility = View.VISIBLE
+                viewModel.advancePaymentRequired = true
+                if (advanceAmountEditText.text.toString().isNotBlank()) {
+                    viewModel.advancePaymentAmount = advanceAmountEditText.text.toString().toInt()
+                } else {
+                    viewModel.advancePaymentAmount = -1
+                }
             }
             if (btnId == R.id.not_advance_payment) {
                 advanceAmountContainer.visibility = View.GONE
-                advancePaymentRequired = false
+                paymentTypeContainer.visibility = View.GONE
+                viewModel.advancePaymentRequired = false
+                viewModel.advancePaymentAmount = -1
             }
+            viewModel.validate()
         }
 
-        view.findViewById<Button>(R.id.book_button).setOnClickListener {
+        val bookButton = view.findViewById<SwipeButton>(R.id.book_button)
+        viewModel.isValid().observe(viewLifecycleOwner) {
+            bookButton.isEnabled = it
+            bookButton.setDisabledDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    if (it) R.drawable.book_arrow else R.drawable.invalid
+                )
+            )
+        }
+        bookButton.setOnActiveListener {
+            if (!viewModel.isValid().value!!) {
+                Toast.makeText(requireContext(), "Enter all data", Toast.LENGTH_SHORT).show()
+                return@setOnActiveListener
+            }
+
+            (requireActivity() as MainActivity).hideKeyboard()
+
             val loading = view.findViewById<ProgressBar>(R.id.loading_icon)
             loading.visibility = View.VISIBLE
 
             var error = false
-            if (bookingForEditText.text.toString().isBlank()) {
+            if (viewModel.bookingFor.isBlank()) {
                 bookingForContainer.error = "Provide a name"
                 loading.visibility = View.GONE
                 error = true
             }
-            if (numberOfPeopleEditText.text.toString().isBlank()) {
+            if (viewModel.numberOfPeople < 1) {
                 numberOfPeopleContainer.error = "Enter number"
                 loading.visibility = View.GONE
                 error = true
             }
-            if (advancePaymentRequired && advanceAmountEditText.text.toString().isBlank()) {
+            if (viewModel.advancePaymentRequired && viewModel.advancePaymentAmount < 1) {
                 advanceAmountContainer.error = "Enter amount"
                 loading.visibility = View.GONE
                 error = true
             }
 
             if (error) {
-                return@setOnClickListener
+                return@setOnActiveListener
             }
 
             viewLifecycleOwner.lifecycleScope.launch {
                 viewModel.createBooking(
                     BookingDetails(
-                        accommodations = accommodationSet,
-                        checkIn = checkInDateTime.toInstant(),
-                        checkOut = checkOutDateTime.toInstant(),
-                        bookingMainPerson = bookingForEditText.text.toString(),
-                        totalNumberOfPeople = numberOfPeopleEditText.text.toString().toInt(),
+                        accommodations = viewModel.accommodationSet,
+                        checkIn = viewModel.checkInDateTime.toInstant(),
+                        checkOut = viewModel.checkOutDateTime.toInstant(),
+                        bookingMainPerson = viewModel.bookingFor,
+                        totalNumberOfPeople = viewModel.numberOfPeople,
                         bookedBy = ApprovedPerson.ADITYA_MHATRE,
                         advancePaymentInfo = AdvancePayment(
-                            advancePaymentRequired,
-                            advanceAmountEditText.text.toString().toInt(),
-                            PaymentType.fromTitleCase(paymentType.text.toString())
+                            viewModel.advancePaymentRequired,
+                            viewModel.advancePaymentAmount,
+                            viewModel.paymentType
                         )
                     )
                 )
@@ -134,7 +188,6 @@ class NewBookingDetailsFragment(
     }
 
     companion object {
-
         @JvmStatic
         fun newInstance(
             checkInDateTime: AppDateTime,
@@ -145,9 +198,3 @@ class NewBookingDetailsFragment(
     }
 }
 
-private fun String.toTitleCase(): String {
-    return (this[0].toUpperCase() + this.substring(1).toLowerCase(Locale.getDefault())).replace(
-        "_",
-        ""
-    )
-}

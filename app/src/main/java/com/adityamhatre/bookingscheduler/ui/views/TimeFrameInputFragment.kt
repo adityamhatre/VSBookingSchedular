@@ -81,10 +81,6 @@ class TimeFrameInputFragment : Fragment() {
                 Toast.makeText(requireContext(), "Some data is missing", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            Toast.makeText(requireContext(), "Proceeding", Toast.LENGTH_SHORT).show()
-            println("Check in: ${viewModel.checkInDateTime}")
-            println("Check out: ${viewModel.checkOutDateTime}")
-            println("Selected Accommodations: ${viewModel.getSelectedAccommodations().value}")
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(
                     R.id.container,
@@ -110,10 +106,10 @@ class TimeFrameInputFragment : Fragment() {
 
         checkInTime.setOnCheckedChangeListener { _, checkedId ->
             if (checkedId == R.id._9_30am) {
-                viewModel.checkOutDateTime.hour = 9
+                viewModel.checkInDateTime.hour = 9
             }
             if (checkedId == R.id._5_30pm) {
-                viewModel.checkOutDateTime.hour = 17
+                viewModel.checkInDateTime.hour = 17
             }
         }
     }
@@ -131,9 +127,12 @@ class TimeFrameInputFragment : Fragment() {
             btn.isEnabled = false
             view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.VISIBLE
             viewLifecycleOwner.lifecycleScope.launch {
-                val accommodationListLayout =
-                    view.findViewById<LinearLayout>(R.id.accommodation_list)
-                accommodationListLayout.removeAllViews()
+                val accommodationListLayout1 =
+                    view.findViewById<LinearLayout>(R.id.accommodation_list1)
+                accommodationListLayout1.removeAllViews()
+                val accommodationListLayout2 =
+                    view.findViewById<LinearLayout>(R.id.accommodation_list2)
+                accommodationListLayout2.removeAllViews()
                 viewModel.clearAccommodations()
 
                 val availableAccommodations = viewModel.checkAvailability(
@@ -141,7 +140,7 @@ class TimeFrameInputFragment : Fragment() {
                     viewModel.checkOutDateTime
                 ).toSet()
 
-                Accommodation.all().forEach {
+                Accommodation.all().forEachIndexed { i, it ->
                     val checkBox = CheckBox(requireContext())
                     checkBox.text = it.readableName
                     checkBox.isEnabled = availableAccommodations.contains(it)
@@ -153,7 +152,11 @@ class TimeFrameInputFragment : Fragment() {
                             viewModel.removeAccommodation(accommodation)
                         }
                     }
-                    accommodationListLayout.addView(checkBox)
+                    if (i < Accommodation.all().size / 2) {
+                        accommodationListLayout1.addView(checkBox)
+                    } else {
+                        accommodationListLayout2.addView(checkBox)
+                    }
                 }
 
             }.invokeOnCompletion {

@@ -17,7 +17,8 @@ class ListOfBookingsViewModel : ViewModel() {
         if (bookingsOn.isForDate())
             return bookingDetailsService.getAllBookingsForDate(
                 date = bookingsOn.date,
-                month = bookingsOn.month
+                month = bookingsOn.month,
+                year = 2021
             )
         if (bookingsOn.isForMonth())
             return bookingDetailsService.getAllBookingsForMonth(month = bookingsOn.month)

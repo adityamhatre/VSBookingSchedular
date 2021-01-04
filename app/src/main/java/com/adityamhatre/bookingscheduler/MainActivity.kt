@@ -1,8 +1,11 @@
 package com.adityamhatre.bookingscheduler
 
 import android.os.Bundle
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.adityamhatre.bookingscheduler.ui.views.GoogleSignInFragment
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,5 +25,15 @@ class MainActivity : AppCompatActivity() {
         } else {
             supportFragmentManager.popBackStack()
         }
+    }
+
+    fun hideKeyboard() {
+//        https://stackoverflow.com/a/17789187
+        val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        var view: View? = currentFocus
+        if (view == null) {
+            view = View(this)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }

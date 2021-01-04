@@ -3,6 +3,7 @@ package com.adityamhatre.bookingscheduler.googleapi
 import android.accounts.Account
 import android.content.Context
 import com.adityamhatre.bookingscheduler.Application
+import com.adityamhatre.bookingscheduler.Application.Companion.gson
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.dtos.AppDateTime
 import com.adityamhatre.bookingscheduler.dtos.BookingDetails
@@ -15,10 +16,10 @@ import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.*
-import com.google.gson.Gson
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
+
 
 class CalendarService(context: Context, account: Account) {
     private val credential = GoogleAccountCredential.usingOAuth2(
@@ -97,14 +98,16 @@ class CalendarService(context: Context, account: Account) {
     }
 
     fun createBooking(bookingDetails: BookingDetails) {
-        val gson = Gson()
+
         val uuid = UUID.randomUUID().toString()
 
         bookingDetails.accommodations.forEach {
             calendarClient.events().insert(
                 it.calendarId, Event()
                     .setSummary(bookingDetails.bookingMainPerson)
-                    .setExtendedProperties(Event.ExtendedProperties().setPrivate(mapOf("id" to uuid)))
+                    .setExtendedProperties(
+                        Event.ExtendedProperties().setPrivate(mapOf("id" to uuid))
+                    )
                     .setDescription(gson.toJson(bookingDetails))
                     .setStart(
                         EventDateTime().setDateTime(DateTime(Date.from(bookingDetails.checkIn)))
