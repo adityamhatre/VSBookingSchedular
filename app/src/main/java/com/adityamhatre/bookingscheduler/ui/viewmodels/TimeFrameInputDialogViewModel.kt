@@ -13,7 +13,7 @@ class TimeFrameInputDialogViewModel : ViewModel() {
     private val selectedAccommodations = MutableLiveData<Set<Accommodation>>(mutableSetOf())
     fun addAccommodation(accommodation: Accommodation) {
         val value: HashSet<Accommodation> =
-            (selectedAccommodations.value as HashSet<Accommodation>?)!!
+            (selectedAccommodations.value as HashSet<Accommodation>)
         value.add(accommodation)
         selectedAccommodations.value = selectedAccommodations.value
     }
@@ -27,7 +27,7 @@ class TimeFrameInputDialogViewModel : ViewModel() {
 
     fun clearAccommodations() {
         val value: HashSet<Accommodation> =
-            (selectedAccommodations.value as HashSet<Accommodation>?)!!
+            (selectedAccommodations.value as HashSet<Accommodation>)
         value.clear()
         selectedAccommodations.value = selectedAccommodations.value
     }

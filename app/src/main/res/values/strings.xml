@@ -21,5 +21,12 @@
     <string name="check_in_time">Check in time:</string>
     <string name="select_check_out_date_and_time">Select check out date and time</string>
     <string name="proceed">Proceed</string>
+    <string name="no_booking_for_selected_date_create_one_by_clicking_the_button_below">No bookings for selected date. Create one by clicking the button below</string>
+    <string name="booking_for">Booking for</string>
+    <string name="no_of_people">No. of people</string>
+    <string name="advance_payment">Advance Payment</string>
+    <string name="no_advance_payment">No Advance Payment</string>
+    <string name="amount">Amount</string>
+    <string name="book">Book</string>
 
 </resources>

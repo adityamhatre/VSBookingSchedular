@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -47,7 +49,7 @@ class ListOfBookingsFragment : Fragment() {
             return
         }
 
-//        setupRecyclerView(view)
+        setupRecyclerView(view)
         setupFab(view)
     }
 
@@ -78,7 +80,12 @@ class ListOfBookingsFragment : Fragment() {
     private fun setupRecyclerView(view: View) {
         val bookingRecyclerView = view.findViewById<RecyclerView>(R.id.booking_list)
         viewLifecycleOwner.lifecycleScope.launch {
+            view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.VISIBLE
             bookingRecyclerView.adapter = viewModel.getBookingListAdapter()
+        }.invokeOnCompletion {
+            view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.GONE
+            view.findViewById<TextView>(R.id.emptyView).visibility =
+                if (bookingRecyclerView.adapter?.itemCount == 0) View.VISIBLE else View.GONE
         }
 
     }

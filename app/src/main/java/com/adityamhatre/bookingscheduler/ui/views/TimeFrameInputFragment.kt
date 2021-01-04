@@ -85,6 +85,17 @@ class TimeFrameInputFragment : Fragment() {
             println("Check in: ${viewModel.checkInDateTime}")
             println("Check out: ${viewModel.checkOutDateTime}")
             println("Selected Accommodations: ${viewModel.getSelectedAccommodations().value}")
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(
+                    R.id.container,
+                    NewBookingDetailsFragment.newInstance(
+                        viewModel.checkInDateTime,
+                        viewModel.checkOutDateTime,
+                        viewModel.getSelectedAccommodations().value!!
+                    )
+                )
+                .addToBackStack(null)
+                .commit()
         }
     }
 

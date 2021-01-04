@@ -5,34 +5,28 @@ import com.adityamhatre.bookingscheduler.dtos.AppDateTime
 import com.adityamhatre.bookingscheduler.dtos.BookingDetails
 import com.adityamhatre.bookingscheduler.enums.Accommodation
 import com.adityamhatre.bookingscheduler.googleapi.CalendarService
+import com.google.api.services.calendar.model.Event
+import com.google.gson.Gson
 
 class BookingsService {
     private val calendarService =
         CalendarService(Application.getApplicationContext(), Application.account)
 
-    fun getAllBookings() {
-        TODO("Not yet implemented")
-    }
-
     fun getAllBookingsForDate(date: Int, month: Int): List<BookingDetails> {
-        /*Accommodation.all().forEach {
-            calendarService.addBookingForDate(
+        val allBookings = mutableListOf<Event>()
+        val gson = Gson()
+        Accommodation.all().forEach {
+            allBookings += calendarService.getBookingsForDate(
                 it.calendarId,
                 date,
                 month,
-                year = 2021,
-                bookingFor = "Jhumani-${UUID.randomUUID()}"
-            )
-        }*/
-        Accommodation.all().forEach {
-            calendarService.getBookingsForDate(it.calendarId, date, month, year = 2021)
-                .iterator()
-                .forEach { event -> println("${event.id}, ${event.summary}, ${event.organizer.displayName}") }
+                year = 2021
+            ).toList()
         }
 
-
-        TODO("Not yet implemented")
-
+        return allBookings.groupBy { it.extendedProperties.private["id"] as String }
+            .map { lv -> lv.value[0].description }
+            .map { gson.fromJson(it, BookingDetails::class.java) }.toList()
     }
 
     fun getAllBookingsForMonth(month: Int): List<BookingDetails> {
@@ -41,5 +35,10 @@ class BookingsService {
 
     fun checkAvailability(timeMin: AppDateTime, timeMax: AppDateTime): List<Accommodation> {
         return calendarService.checkAvailability(timeMin, timeMax)
+    }
+
+    fun createBooking(bookingDetails: BookingDetails) {
+        calendarService.createBooking(bookingDetails)
+
     }
 }

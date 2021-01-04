@@ -1,24 +1,34 @@
 package com.adityamhatre.bookingscheduler.dtos
 
 import com.adityamhatre.bookingscheduler.enums.Accommodation
+import java.io.Serializable
 import java.time.Instant
+import java.util.*
 
 data class BookingDetails(
-    val accommodations: List<Accommodation>,
+    val accommodations: Set<Accommodation>,
     val checkIn: Instant,
     val checkOut: Instant,
     val bookingMainPerson: String,
     val totalNumberOfPeople: Int,
     val bookedBy: ApprovedPerson,
     val advancePaymentInfo: AdvancePayment
-)
+) : Serializable
 
-enum class PaymentType {
-    CASH, CHEQUE, BANK_DEPOSIT, NONE
+enum class PaymentType :Serializable{
+    CASH, CHEQUE, BANK_DEPOSIT, NONE;
+
+    companion object {
+        fun fromTitleCase(title: String): PaymentType {
+            return values().first {
+                it.name == (title.replace(" ", "_").toUpperCase(Locale.getDefault()))
+            }
+        }
+    }
 }
 
 data class AdvancePayment(
     val advanceReceived: Boolean,
     val amount: Int = -1,
     val paymentType: PaymentType = PaymentType.NONE
-)
+):Serializable

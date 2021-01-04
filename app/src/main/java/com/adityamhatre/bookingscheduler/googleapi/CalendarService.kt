@@ -5,6 +5,7 @@ import android.content.Context
 import com.adityamhatre.bookingscheduler.Application
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.dtos.AppDateTime
+import com.adityamhatre.bookingscheduler.dtos.BookingDetails
 import com.adityamhatre.bookingscheduler.enums.Accommodation
 import com.adityamhatre.bookingscheduler.utils.TimeStampConverter
 import com.google.api.client.extensions.android.http.AndroidHttp.newCompatibleTransport
@@ -14,6 +15,7 @@ import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.*
+import com.google.gson.Gson
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
@@ -67,41 +69,6 @@ class CalendarService(context: Context, account: Account) {
         }
     }
 
-    fun addBookingForDate(
-        calendarId: String,
-        date: Int,
-        month: Int,
-        year: Int,
-        bookingFor: String
-    ) {
-        calendarClient.events().insert(
-            calendarId, Event()
-                .setSummary(bookingFor)
-                .setDescription("{details: {}}")
-                .setStart(
-                    EventDateTime().setDateTime(
-                        DateTime(
-                            Date.from(
-                                LocalDateTime.of(year, month, date, 9, 30).toInstant(
-                                    ZoneOffset.ofHoursMinutes(5, 30)
-                                )
-                            )
-                        )
-                    )
-                ).setEnd(
-                    EventDateTime().setDateTime(
-                        DateTime(
-                            Date.from(
-                                LocalDateTime.of(year, month, date, 12 + 9, 0).toInstant(
-                                    ZoneOffset.ofHoursMinutes(5, 30)
-                                )
-                            )
-                        )
-                    )
-                )
-        ).execute()
-    }
-
     fun checkAvailability(
         timeMin: AppDateTime,
         timeMax: AppDateTime
@@ -127,5 +94,25 @@ class CalendarService(context: Context, account: Account) {
             .calendars
             .filterValues { value -> value.busy.isEmpty() }
             .map { (key, _) -> Accommodation.from(key) }
+    }
+
+    fun createBooking(bookingDetails: BookingDetails) {
+        val gson = Gson()
+        val uuid = UUID.randomUUID().toString()
+
+        bookingDetails.accommodations.forEach {
+            calendarClient.events().insert(
+                it.calendarId, Event()
+                    .setSummary(bookingDetails.bookingMainPerson)
+                    .setExtendedProperties(Event.ExtendedProperties().setPrivate(mapOf("id" to uuid)))
+                    .setDescription(gson.toJson(bookingDetails))
+                    .setStart(
+                        EventDateTime().setDateTime(DateTime(Date.from(bookingDetails.checkIn)))
+                    ).setEnd(
+                        EventDateTime().setDateTime(DateTime(Date.from(bookingDetails.checkOut)))
+                    )
+            ).execute()
+        }
+
     }
 }

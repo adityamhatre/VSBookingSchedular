@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.views.AccommodationList">
+    tools:context=".ui.views.AccommodationListFragment">
 
     <LinearLayout
         android:id="@+id/accommodation_list"

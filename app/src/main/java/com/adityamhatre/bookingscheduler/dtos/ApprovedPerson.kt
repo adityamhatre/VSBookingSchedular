@@ -1,6 +1,8 @@
 package com.adityamhatre.bookingscheduler.dtos
 
-enum class ApprovedPerson(val readableName: String) {
+import java.io.Serializable
+
+enum class ApprovedPerson(val readableName: String) : Serializable {
     RAJESH_MHATRE("Rajesh Mhatre"),
     MADHURA_MHATRE("Madhura Mhatre"),
     NILIMA_RAUT("Nilima Raut"),

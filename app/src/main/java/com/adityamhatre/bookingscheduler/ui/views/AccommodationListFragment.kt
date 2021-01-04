@@ -14,7 +14,7 @@ import com.adityamhatre.bookingscheduler.enums.Accommodation
 private const val MONTH = "month"
 private const val DATE = "date"
 
-class AccommodationList : Fragment() {
+class AccommodationListFragment : Fragment() {
     private var month = -1
     private var date = -1
 
@@ -58,7 +58,7 @@ class AccommodationList : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(month: Int, date: Int) = AccommodationList().apply {
+        fun newInstance(month: Int, date: Int) = AccommodationListFragment().apply {
             arguments = Bundle().apply {
                 putInt(MONTH, month)
                 putInt(DATE, date)
