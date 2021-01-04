@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "252878403524",
+    "project_id": "vs-booking-scheduler",
+    "storage_bucket": "vs-booking-scheduler.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:252878403524:android:e79fbc867831dc24981691",
+        "android_client_info": {
+          "package_name": "com.adityamhatre.bookingscheduler"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "252878403524-25pd1rbf5jv9ofq87ipp4r7jlu6q6k58.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.adityamhatre.bookingscheduler",
+            "certificate_hash": "4ffec4fcbe02f31c31772d2846d0580f94b2612f"
+          }
+        },
+        {
+          "client_id": "252878403524-6uetks1qm1cb047fl86fead0ee20l15u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2ePhoC8W9vN4VMTZV-5HFBvWrBL47lWc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "252878403524-6uetks1qm1cb047fl86fead0ee20l15u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
