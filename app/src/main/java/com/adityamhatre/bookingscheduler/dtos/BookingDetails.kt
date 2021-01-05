@@ -14,7 +14,10 @@ data class BookingDetails(
     val bookingMainPerson: String,
     val totalNumberOfPeople: Int,
     val bookedBy: ApprovedPerson,
-    val advancePaymentInfo: AdvancePayment
+    val advancePaymentInfo: AdvancePayment,
+    val phoneNumber: String,
+    val bookingIdOnGoogle: String
+    //ADD NEW FIELDS IN DESERIALIZER
 ) : Serializable
 
 enum class PaymentType : Serializable {

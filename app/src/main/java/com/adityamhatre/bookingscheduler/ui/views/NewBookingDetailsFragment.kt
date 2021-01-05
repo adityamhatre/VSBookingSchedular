@@ -51,7 +51,10 @@ class NewBookingDetailsFragment(
         val bookingScheduleText =
             "From: ${viewModel.checkInDateTime.toHumanFormat()}" +
                     "\nTo: ${viewModel.checkOutDateTime.toHumanFormat()}" +
-                    "\nIn ${Accommodation.bungalow51List(viewModel.accommodationSet).joinToString { it.readableName }}"
+                    "\nIn ${
+                        Accommodation.bungalow51List(viewModel.accommodationSet)
+                            .joinToString { it.readableName }
+                    }"
         view.findViewById<TextView>(R.id.booking_schedule).text = bookingScheduleText
 
 
@@ -80,6 +83,14 @@ class NewBookingDetailsFragment(
             } else {
                 viewModel.numberOfPeople = -1
             }
+            viewModel.validate()
+        }
+
+        val phoneNumberEditText = view.findViewById<TextInputEditText>(R.id.phone_number)
+        val phoneNumberContainer =
+            view.findViewById<TextInputLayout>(R.id.phone_number_container)
+        phoneNumberEditText.doOnTextChanged { text, _, _, _ ->
+            viewModel.phoneNumber = text.toString()
             viewModel.validate()
         }
 
@@ -146,6 +157,11 @@ class NewBookingDetailsFragment(
                 loading.visibility = View.GONE
                 error = true
             }
+            if (viewModel.phoneNumber.isBlank()) {
+                phoneNumberContainer.error = "Provide a phone number"
+                loading.visibility = View.GONE
+                error = true
+            }
             if (viewModel.numberOfPeople < 1) {
                 numberOfPeopleContainer.error = "Enter number"
                 loading.visibility = View.GONE
@@ -174,7 +190,9 @@ class NewBookingDetailsFragment(
                             viewModel.advancePaymentRequired,
                             viewModel.advancePaymentAmount,
                             viewModel.paymentType
-                        )
+                        ),
+                        phoneNumber = viewModel.phoneNumber,
+                        bookingIdOnGoogle = UUID.randomUUID().toString()
                     )
                 )
             }.invokeOnCompletion {

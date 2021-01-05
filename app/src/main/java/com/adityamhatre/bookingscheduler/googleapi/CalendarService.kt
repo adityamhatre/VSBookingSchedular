@@ -100,15 +100,13 @@ class CalendarService(context: Context, account: Account) {
     }
 
     fun createBooking(bookingDetails: BookingDetails) {
-
-        val uuid = UUID.randomUUID().toString()
-
         bookingDetails.accommodations.forEach {
             calendarClient.events().insert(
                 it.calendarId, Event()
                     .setSummary(bookingDetails.bookingMainPerson)
                     .setExtendedProperties(
-                        Event.ExtendedProperties().setPrivate(mapOf("id" to uuid))
+                        Event.ExtendedProperties()
+                            .setPrivate(mapOf("id" to bookingDetails.bookingIdOnGoogle))
                     )
                     .setDescription(gson.toJson(bookingDetails))
                     .setStart(
@@ -119,5 +117,12 @@ class CalendarService(context: Context, account: Account) {
             ).execute()
         }
 
+    }
+
+    fun removeBooking(bookingDetails: BookingDetails) {
+        bookingDetails.accommodations.forEach {
+            calendarClient.events().delete(it.calendarId, bookingDetails.bookingIdOnGoogle)
+                .execute()
+        }
     }
 }

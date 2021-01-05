@@ -31,5 +31,7 @@
     <string name="select_all">Select All</string>
     <string name="bungalow_5_1">Bungalow (5 + 1)</string>
     <string name="bookings_on">Loading Bookings on</string>
+    <string name="phone_number">Phone number</string>
+    <string name="delete">Delete</string>
 
 </resources>

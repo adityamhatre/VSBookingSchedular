@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -132,7 +133,19 @@ class ListOfBookingsFragment : Fragment() {
         val bookingRecyclerView = view.findViewById<RecyclerView>(R.id.booking_list)
         viewLifecycleOwner.lifecycleScope.launch {
             view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.VISIBLE
-            bookingRecyclerView.adapter = viewModel.getBookingListAdapter()
+            bookingRecyclerView.adapter =
+                viewModel.getBookingListAdapter(confirmDelete = { position, onConfirm ->
+                    val builder = AlertDialog.Builder(requireContext())
+                    builder.setMessage("Are you sure you want to Delete?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes") { _, _ ->
+                            onConfirm()
+                            bookingRecyclerView.adapter?.notifyItemRemoved(position)
+                        }
+                        .setNegativeButton("No") { dialog, _ -> dialog.dismiss() }
+                    val alert = builder.create()
+                    alert.show()
+                })
         }.invokeOnCompletion {
             bookingRecyclerView.postDelayed({
                 bookingRecyclerView.smoothScrollToPosition(
@@ -141,16 +154,27 @@ class ListOfBookingsFragment : Fragment() {
             }, 250)
 
             view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.GONE
-            view.findViewById<TextView>(R.id.emptyView).visibility =
-                if (bookingRecyclerView.adapter?.itemCount == 0) View.VISIBLE else View.GONE
 
-            val titleView = view.findViewById<TextView>(R.id.bookings_on)
-            titleView.visibility =
-                if (bookingRecyclerView.adapter?.itemCount != 0) View.VISIBLE else View.GONE
-            if (bookingRecyclerView.adapter?.itemCount != 0) {
-                titleView.text = titleView.text.toString()
-                    .replace("Loading b", "${bookingRecyclerView.adapter?.itemCount} B")
+            viewModel.getBookingsCount().observe(viewLifecycleOwner) {
+                val titleView = view.findViewById<TextView>(R.id.bookings_on)
+                if (it != 0) {
+                    view.findViewById<TextView>(R.id.emptyView).visibility = View.GONE
+                    titleView.visibility = View.VISIBLE
+
+                    titleView.text = titleView.text.toString()
+                        .replace("Loading bookings", "$it bookings")
+                        .replace(Regex("\\d+\\sbooking(s+)"), "$it bookings")
+                        .replace(
+                            "bookings",
+                            if (it == 1) "booking" else "bookings"
+                        )
+                        .replace("...", "")
+                } else {
+                    view.findViewById<TextView>(R.id.emptyView).visibility = View.VISIBLE
+                    titleView.visibility = View.GONE
+                }
             }
+
         }
 
     }

@@ -14,7 +14,11 @@ import java.time.Instant
 import java.time.ZoneId
 import java.util.*
 
-class BookingListAdapter(private val bookingDetailsList: List<BookingDetails>) :
+class BookingListAdapter(
+    private val bookingDetailsList: List<BookingDetails>,
+    private val onItemClicked: (Int, BookingDetails) -> Unit,
+    private val onItemDeleted: (Int, BookingDetails) -> Unit
+) :
     RecyclerView.Adapter<BookingListAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(
@@ -35,11 +39,21 @@ class BookingListAdapter(private val bookingDetailsList: List<BookingDetails>) :
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(position: Int) {
             val bookingDetails = bookingDetailsList[position]
+            itemView.setOnClickListener { onItemClicked(adapterPosition, bookingDetails) }
 
             val title =
                 "${bookingDetails.bookingMainPerson} (${bookingDetails.totalNumberOfPeople} people)"
             (itemView.findViewById<TextView>(R.id.title)).text = title
 
+            val phoneNumberView = (itemView.findViewById<TextView>(R.id.phone_number))
+            if (bookingDetails.phoneNumber.isNotEmpty()) {
+                val phoneNumber = SpannableStringBuilder()
+                    .bold { append("Phone:  ") }
+                    .append(bookingDetails.phoneNumber)
+                phoneNumberView.text = phoneNumber
+            } else {
+                phoneNumberView.visibility = View.GONE
+            }
 
             val checkInTiming = SpannableStringBuilder()
                 .bold { append("Check in:  ") }
@@ -66,6 +80,10 @@ class BookingListAdapter(private val bookingDetailsList: List<BookingDetails>) :
                 .append(bookingDetails.bookedBy.readableName)
 
             (itemView.findViewById<TextView>(R.id.booked_by)).text = bookedBy
+
+            (itemView.findViewById<TextView>(R.id.delete_button)).setOnClickListener {
+                onItemDeleted(adapterPosition, bookingDetails)
+            }
         }
     }
 }

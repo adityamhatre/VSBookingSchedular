@@ -27,6 +27,7 @@ class NewBookingDetailsViewModel : ViewModel() {
     var paymentType = PaymentType.CASH
     var advancePaymentAmount: Int = -1
     var advancePaymentRequired: Boolean = true
+    var phoneNumber = ""
 
     private val isDataValid: MutableLiveData<Boolean> = MutableLiveData(false)
     fun validate() {
@@ -34,6 +35,7 @@ class NewBookingDetailsViewModel : ViewModel() {
                 && checkOutDateTime.isValid()
                 && accommodationSet.isNotEmpty()
                 && bookingFor.isNotBlank()
+                && phoneNumber.isNotBlank()
                 && numberOfPeople > 0
 
         if (advancePaymentRequired) {
