@@ -1,6 +1,7 @@
 package com.adityamhatre.bookingscheduler.ui.views
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -199,9 +200,16 @@ class NewBookingDetailsFragment(
                 )
             }.invokeOnCompletion {
                 loading.visibility = View.GONE
-                Toast.makeText(requireContext(), "Added new booking", Toast.LENGTH_SHORT).show()
-                requireActivity().onBackPressed()
-                requireActivity().onBackPressed()
+                try {
+                    Toast.makeText(requireContext(), "Added new booking", Toast.LENGTH_SHORT).show()
+                    requireActivity().onBackPressed()
+                    requireActivity().onBackPressed()
+                } catch (ie: IllegalStateException) {
+                    Log.e(
+                        "NewBookingDetailsFragment:viewModel.createBooking#invokeOnCompletion",
+                        "Not attached to fragment"
+                    )
+                }
             }
 
         }

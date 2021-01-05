@@ -40,10 +40,9 @@ class ListOfBookingsViewModel : ViewModel() {
                 onItemDeleted = { i, _ ->
                     confirmDelete(i) {
                         withContext(Dispatchers.IO) {
+                            bookingsCount.postValue(bookings.size - 1)
                             bookingDetailsService.removeBooking(bookings.removeAt(i))
                         }
-
-                        bookingsCount.value = bookings.size
                     }
                 })
         }

@@ -166,7 +166,7 @@ class ListOfBookingsFragment : Fragment() {
             bookingRecyclerView.adapter =
                 viewModel.getBookingListAdapter(confirmDelete = { position, onConfirm ->
                     val builder = AlertDialog.Builder(requireContext())
-                    builder.setMessage("Are you sure you want to Delete?")
+                    builder.setMessage("Are you sure you want to delete?")
                         .setCancelable(false)
                         .setPositiveButton("Yes") { _, _ ->
                             viewLifecycleOwner.lifecycleScope.launch { onConfirm() }
