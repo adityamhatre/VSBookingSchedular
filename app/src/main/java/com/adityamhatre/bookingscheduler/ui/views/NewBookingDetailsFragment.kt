@@ -22,6 +22,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class NewBookingDetailsFragment(
@@ -192,7 +193,8 @@ class NewBookingDetailsFragment(
                             viewModel.paymentType
                         ),
                         phoneNumber = viewModel.phoneNumber,
-                        bookingIdOnGoogle = UUID.randomUUID().toString()
+                        bookingIdOnGoogle = UUID.randomUUID().toString(),
+                        eventIds = ArrayList()
                     )
                 )
             }.invokeOnCompletion {

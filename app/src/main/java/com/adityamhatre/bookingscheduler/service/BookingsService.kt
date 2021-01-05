@@ -19,52 +19,92 @@ class BookingsService {
     fun getAllBookingsForDate(date: Int, month: Int, year: Int): MutableList<BookingDetails> {
         var allBookings: Sequence<Event>
         val filteredBookings = mutableSetOf<BookingDetails>()
-        Accommodation.all().forEach { it ->
+        val map = mutableMapOf<String, HashSet<Pair<String, String>>>()
+        Accommodation.all().forEach { accommodationIt ->
             allBookings = calendarService.getBookingsForDate(
-                it.calendarId,
+                accommodationIt.calendarId,
                 date,
                 month,
                 year = 2021
             )
             filteredBookings.addAll(allBookings.groupBy { it.extendedProperties.private["id"] as String }
                 .map { lv ->
-                    val json = gson.fromJson(lv.value[0].description, JsonObject::class.java)
-                    json.addProperty("bookingIdOnGoogle", lv.key)
-                    json
+                    if (map.containsKey(lv.key)) {
+                        map[lv.key]?.addAll(lv.value.map {
+                            Pair(
+                                accommodationIt.calendarId,
+                                it.id
+                            )
+                        })
+                    } else {
+                        val a = HashSet<Pair<String, String>>()
+                        a.addAll(lv.value.map { Pair(accommodationIt.calendarId, it.id) })
+                        map[lv.key] = a
+                    }
+                    lv
                 }
+                .map { lv -> oldFormatToNewFormatMapper(lv) }
                 .map { gson.fromJson(it, BookingDetails::class.java) }
                 .filter {
-                    it.checkIn.isBefore(
+                    val shouldFilter = it.checkIn.isBefore(
                         LocalDateTime.of(year, month, date, 17, 31).toInstant(
                             ZoneOffset.ofHoursMinutes(5, 30)
                         )
                     )
+                    if (!shouldFilter) {
+                        map.remove(it.bookingIdOnGoogle)
+                    }
+                    return@filter shouldFilter
                 }
             )
         }
 
+
         return filteredBookings.sortedWith(compareBy({ it.checkIn }, { it.checkOut }))
+            .map {
+                it.eventIds.clear()
+                it.eventIds.addAll(map[it.bookingIdOnGoogle] ?: ArrayList())
+                it
+            }
             .toMutableList()
+    }
+
+    private fun oldFormatToNewFormatMapper(lv: Map.Entry<String, List<Event>>): JsonObject? {
+        val json = gson.fromJson(lv.value[0].description, JsonObject::class.java)
+        json.addProperty("bookingIdOnGoogle", lv.key)
+        return json
     }
 
     fun getAllBookingsForMonth(month: Int, year: Int = 2021): MutableList<BookingDetails> {
         var allBookings: Sequence<Event>
         val filteredBookings = mutableSetOf<BookingDetails>()
-        Accommodation.all().forEach { it ->
+        val map = mutableMapOf<String, HashSet<Pair<String, String>>>()
+        Accommodation.all().forEach { accommodationIt ->
             allBookings = calendarService.getBookingsForMonth(
-                it.calendarId,
+                accommodationIt.calendarId,
                 month,
                 year = 2021
             )
             filteredBookings.addAll(allBookings.groupBy { it.extendedProperties.private["id"] as String }
                 .map { lv ->
-                    val json = gson.fromJson(lv.value[0].description, JsonObject::class.java)
-                    json.addProperty("bookingIdOnGoogle", lv.key)
-                    json
+                    if (map.containsKey(lv.key)) {
+                        map[lv.key]?.addAll(lv.value.map {
+                            Pair(
+                                accommodationIt.calendarId,
+                                it.id
+                            )
+                        })
+                    } else {
+                        val a = HashSet<Pair<String, String>>()
+                        a.addAll(lv.value.map { Pair(accommodationIt.calendarId, it.id) })
+                        map[lv.key] = a
+                    }
+                    lv
                 }
+                .map { lv -> oldFormatToNewFormatMapper(lv) }
                 .map { gson.fromJson(it, BookingDetails::class.java) }
                 .filter {
-                    it.checkIn.isBefore(
+                    val shouldFilter = it.checkIn.isBefore(
                         LocalDateTime.of(
                             year,
                             month,
@@ -75,11 +115,20 @@ class BookingsService {
                             ZoneOffset.ofHoursMinutes(5, 30)
                         )
                     )
+                    if (!shouldFilter) {
+                        map.remove(it.bookingIdOnGoogle)
+                    }
+                    return@filter shouldFilter
                 }
             )
         }
 
         return filteredBookings.sortedWith(compareBy({ it.checkIn }, { it.checkOut }))
+            .map {
+                it.eventIds.clear()
+                it.eventIds.addAll(map[it.bookingIdOnGoogle] ?: ArrayList())
+                it
+            }
             .toMutableList()
     }
 

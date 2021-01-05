@@ -139,7 +139,7 @@ class ListOfBookingsFragment : Fragment() {
                     builder.setMessage("Are you sure you want to Delete?")
                         .setCancelable(false)
                         .setPositiveButton("Yes") { _, _ ->
-                            onConfirm()
+                            viewLifecycleOwner.lifecycleScope.launch { onConfirm() }
                             bookingRecyclerView.adapter?.notifyItemRemoved(position)
                         }
                         .setNegativeButton("No") { dialog, _ -> dialog.dismiss() }

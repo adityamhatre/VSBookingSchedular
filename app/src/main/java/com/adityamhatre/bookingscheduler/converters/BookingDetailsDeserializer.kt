@@ -5,6 +5,7 @@ import com.google.gson.*
 import java.lang.reflect.Type
 import java.time.Instant
 import java.util.*
+import kotlin.collections.ArrayList
 
 class BookingDetailsDeserializer : JsonDeserializer<BookingDetails> {
     @Throws(JsonParseException::class)
@@ -20,7 +21,7 @@ class BookingDetailsDeserializer : JsonDeserializer<BookingDetails> {
         val fields = deserialized.javaClass.declaredFields
 
         val mapOfNewFieldsToIsValueSet =
-            mutableMapOf("phoneNumber" to false, "bookingIdOnGoogle" to false)
+            mutableMapOf("phoneNumber" to false, "bookingIdOnGoogle" to false, "eventIds" to false)
         mapOfNewFieldsToIsValueSet.keys.forEach { newField ->
             val field = fields.first {
                 it.isAccessible = true
@@ -39,7 +40,8 @@ class BookingDetailsDeserializer : JsonDeserializer<BookingDetails> {
             advancePaymentInfo = deserialized.advancePaymentInfo,
             phoneNumber = if (mapOfNewFieldsToIsValueSet["phoneNumber"] == true) deserialized.phoneNumber else "",
             bookingIdOnGoogle = if (mapOfNewFieldsToIsValueSet["bookingIdOnGoogle"] == true) deserialized.bookingIdOnGoogle else UUID.randomUUID()
-                .toString()
+                .toString(),
+            eventIds = if (mapOfNewFieldsToIsValueSet["eventIds"] == true) deserialized.eventIds else ArrayList()
         )
     }
 
