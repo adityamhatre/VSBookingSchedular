@@ -186,7 +186,7 @@ class NewBookingDetailsFragment(
                         checkOut = viewModel.checkOutDateTime.toInstant(),
                         bookingMainPerson = viewModel.bookingFor,
                         totalNumberOfPeople = viewModel.numberOfPeople,
-                        bookedBy = ApprovedPerson.findByEmail(Application.account.name),
+                        bookedBy = ApprovedPerson.findByEmail(Application.getInstance().account.name),
                         advancePaymentInfo = AdvancePayment(
                             viewModel.advancePaymentRequired,
                             viewModel.advancePaymentAmount,

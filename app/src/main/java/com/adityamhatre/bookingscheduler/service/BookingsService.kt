@@ -1,7 +1,6 @@
 package com.adityamhatre.bookingscheduler.service
 
 import com.adityamhatre.bookingscheduler.Application
-import com.adityamhatre.bookingscheduler.Application.Companion.gson
 import com.adityamhatre.bookingscheduler.customViews.MonthView
 import com.adityamhatre.bookingscheduler.dtos.AppDateTime
 import com.adityamhatre.bookingscheduler.dtos.BookingDetails
@@ -13,8 +12,10 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 class BookingsService {
+    private val gson = Application.getInstance().gson
+    private val account = Application.getInstance().account
     private val calendarService =
-        CalendarService(Application.getApplicationContext(), Application.account)
+        CalendarService(Application.getApplicationContext(), account)
 
     fun getAllBookingsForDate(date: Int, month: Int, year: Int): MutableList<BookingDetails> {
         var allBookings: Sequence<Event>

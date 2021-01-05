@@ -13,7 +13,7 @@ import java.util.*
 
 class ListOfBookingsViewModel : ViewModel() {
     private val bookingDetailsService = BookingsService()
-    private val bookingsCount: MutableLiveData<Int> = MutableLiveData(0)
+    private val bookingsCount: MutableLiveData<Int> = MutableLiveData(-1)
     fun getBookingsCount(): LiveData<Int> = bookingsCount
 
     var bookingsOn = AppDate(-1, -1, -1)
@@ -47,5 +47,9 @@ class ListOfBookingsViewModel : ViewModel() {
                     }
                 })
         }
+    }
+
+    fun setBookingsCount(i: Int) {
+        bookingsCount.value = i
     }
 }

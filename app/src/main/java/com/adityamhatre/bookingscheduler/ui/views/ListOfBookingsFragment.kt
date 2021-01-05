@@ -38,6 +38,8 @@ class ListOfBookingsFragment : Fragment() {
                 viewModel.bookingsOn = AppDate(date, month, year)
             }
         }
+//        FirebaseMessaging.getInstance()
+//            .send(RemoteMessage.Builder(Application.getInstance().firebaseToken).build())
     }
 
     override fun onCreateView(
@@ -52,9 +54,37 @@ class ListOfBookingsFragment : Fragment() {
         if (viewModel.bookingsOn.nothingInitialized()) {
             return
         }
+        viewModel.setBookingsCount(-1)
         setupTitle(view)
         setupRecyclerView(view)
         setupFab(view)
+        setupObservers(view)
+    }
+
+    private fun setupObservers(view: View) {
+        viewModel.getBookingsCount().observe(viewLifecycleOwner) {
+            if (it == -1) {
+                return@observe
+            }
+            val titleView = view.findViewById<TextView>(R.id.bookings_on)
+            if (it != 0) {
+                view.findViewById<TextView>(R.id.emptyView).visibility = View.GONE
+                titleView.visibility = View.VISIBLE
+
+                titleView.text = titleView.text.toString()
+                    .replace("Loading bookings", "$it bookings")
+                    .replace(Regex("\\d+\\sbooking(s+)"), "$it bookings")
+                    .replace(
+                        "bookings",
+                        if (it == 1) "booking" else "bookings"
+                    )
+                    .replace("...", "")
+            } else {
+                view.findViewById<TextView>(R.id.emptyView).visibility = View.VISIBLE
+                titleView.visibility = View.GONE
+            }
+        }
+
     }
 
     private fun setupTitle(view: View) {
@@ -155,25 +185,6 @@ class ListOfBookingsFragment : Fragment() {
 
             view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.GONE
 
-            viewModel.getBookingsCount().observe(viewLifecycleOwner) {
-                val titleView = view.findViewById<TextView>(R.id.bookings_on)
-                if (it != 0) {
-                    view.findViewById<TextView>(R.id.emptyView).visibility = View.GONE
-                    titleView.visibility = View.VISIBLE
-
-                    titleView.text = titleView.text.toString()
-                        .replace("Loading bookings", "$it bookings")
-                        .replace(Regex("\\d+\\sbooking(s+)"), "$it bookings")
-                        .replace(
-                            "bookings",
-                            if (it == 1) "booking" else "bookings"
-                        )
-                        .replace("...", "")
-                } else {
-                    view.findViewById<TextView>(R.id.emptyView).visibility = View.VISIBLE
-                    titleView.visibility = View.GONE
-                }
-            }
 
         }
 

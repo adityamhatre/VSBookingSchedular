@@ -3,7 +3,6 @@ package com.adityamhatre.bookingscheduler.googleapi
 import android.accounts.Account
 import android.content.Context
 import com.adityamhatre.bookingscheduler.Application
-import com.adityamhatre.bookingscheduler.Application.Companion.gson
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.dtos.AppDateTime
 import com.adityamhatre.bookingscheduler.dtos.BookingDetails
@@ -22,6 +21,7 @@ import java.util.*
 
 
 class CalendarService(context: Context, account: Account) {
+    private val gson = Application.getInstance().gson
     private val credential = GoogleAccountCredential.usingOAuth2(
         context,
         listOf(CalendarScopes.CALENDAR)

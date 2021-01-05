@@ -34,7 +34,7 @@ class GoogleSignInFragment : Fragment() {
             .requestScopes(Scope(CalendarScopes.CALENDAR))
             .build()
 
-        googleSignInClient = GoogleSignIn.getClient(activity!!, gso)
+        googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
     }
 
     override fun onCreateView(
@@ -63,7 +63,7 @@ class GoogleSignInFragment : Fragment() {
             Log.e(TAG, "Returning because account = null")
             return
         }
-        Application.account = account.account!!
+        Application.getInstance().account = account.account!!
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.container, MainFragment.newInstance())
             .commit()

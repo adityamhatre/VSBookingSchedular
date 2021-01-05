@@ -1,5 +1,6 @@
 package com.adityamhatre.bookingscheduler.ui.views
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -62,6 +63,8 @@ class TimeFrameInputFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupView(view)
+        viewModel.clearAccommodations()
+        viewModel.alreadyChecked = false
     }
 
 
@@ -73,12 +76,26 @@ class TimeFrameInputFragment : Fragment() {
         setupCheckAvailabilityButton(view)
         setupNext(view)
         setupObservers(view)
+        val accommodationListLayout1 =
+            view.findViewById<LinearLayout>(R.id.accommodation_list1)
+        accommodationListLayout1.removeAllViews()
+        val accommodationListLayout2 =
+            view.findViewById<LinearLayout>(R.id.accommodation_list2)
+        accommodationListLayout2.removeAllViews()
     }
 
     private fun setupNext(view: View) {
         view.findViewById<Button>(R.id.next).setOnClickListener {
             if (!viewModel.isValid()) {
                 Toast.makeText(requireContext(), "Some data is missing", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (viewModel.checkOutDateTime < viewModel.checkInDateTime) {
+                Toast.makeText(
+                    requireContext(),
+                    "Check out cannot before check in",
+                    Toast.LENGTH_LONG
+                ).show()
                 return@setOnClickListener
             }
             requireActivity().supportFragmentManager.beginTransaction()
@@ -111,65 +128,75 @@ class TimeFrameInputFragment : Fragment() {
             if (checkedId == R.id._5_30pm) {
                 viewModel.checkInDateTime.hour = 17
             }
+            if (viewModel.alreadyChecked) {
+                checkAvailability(view)
+            }
         }
     }
 
     private fun setupCheckAvailabilityButton(view: View) {
-        view.findViewById<Button>(R.id.check_availability).setOnClickListener { btn ->
-            if (viewModel.checkOutDateTime < viewModel.checkInDateTime) {
-                Toast.makeText(
-                    requireContext(),
-                    "Check out cannot before check in",
-                    Toast.LENGTH_LONG
-                ).show()
-                return@setOnClickListener
-            }
-            btn.isEnabled = false
-            view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.VISIBLE
-            viewLifecycleOwner.lifecycleScope.launch {
-                val accommodationListLayout1 =
-                    view.findViewById<LinearLayout>(R.id.accommodation_list1)
-                accommodationListLayout1.removeAllViews()
-                val accommodationListLayout2 =
-                    view.findViewById<LinearLayout>(R.id.accommodation_list2)
-                accommodationListLayout2.removeAllViews()
-                viewModel.clearAccommodations()
+        view.findViewById<Button>(R.id.check_availability)
+            .setOnClickListener { checkAvailability(view, firstTimeCheck = true) }
+    }
 
-                val availableAccommodations = viewModel.checkAvailability(
-                    viewModel.checkInDateTime,
-                    viewModel.checkOutDateTime
-                ).toSet()
+    private fun checkAvailability(view: View, firstTimeCheck: Boolean = false) {
+        if (firstTimeCheck) {
+            viewModel.alreadyChecked = firstTimeCheck
+            view.findViewById<DatePicker>(R.id.check_out_date_picker).isEnabled = false
+        }
+        val btn = view.findViewById<Button>(R.id.check_availability)
+        if (viewModel.checkOutDateTime < viewModel.checkInDateTime) {
+            Toast.makeText(
+                requireContext(),
+                "Check out cannot before check in",
+                Toast.LENGTH_LONG
+            ).show()
+            return
+        }
+        btn.isEnabled = false
+        view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.VISIBLE
+        viewLifecycleOwner.lifecycleScope.launch {
+            val accommodationListLayout1 =
+                view.findViewById<LinearLayout>(R.id.accommodation_list1)
+            accommodationListLayout1.removeAllViews()
+            val accommodationListLayout2 =
+                view.findViewById<LinearLayout>(R.id.accommodation_list2)
+            accommodationListLayout2.removeAllViews()
+            viewModel.clearAccommodations()
 
-                viewModel.accommodationCheckBoxIds.clear()
-                Accommodation.all().forEachIndexed { i, it ->
-                    val checkBox = CheckBox(requireContext())
-                    viewModel.accommodationCheckBoxIds.add(View.generateViewId())
-                    checkBox.id = viewModel.accommodationCheckBoxIds.last()
+            val availableAccommodations = viewModel.checkAvailability(
+                viewModel.checkInDateTime,
+                viewModel.checkOutDateTime
+            ).toSet()
 
-                    checkBox.text = it.readableName
-                    checkBox.isEnabled = availableAccommodations.contains(it)
-                    checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
-                        val accommodation = Accommodation.byReadableName(buttonView.text.toString())
-                        if (isChecked) {
-                            viewModel.addAccommodation(accommodation)
-                        } else {
-                            viewModel.removeAccommodation(accommodation)
-                        }
-                    }
-                    if (i < Accommodation.all().size / 2) {
-                        accommodationListLayout1.addView(checkBox)
+            viewModel.accommodationCheckBoxIds.clear()
+            Accommodation.all().forEachIndexed { i, it ->
+                val checkBox = CheckBox(requireContext())
+                viewModel.accommodationCheckBoxIds.add(View.generateViewId())
+                checkBox.id = viewModel.accommodationCheckBoxIds.last()
+
+                checkBox.text = it.readableName
+                checkBox.isEnabled = availableAccommodations.contains(it)
+                checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
+                    val accommodation = Accommodation.byReadableName(buttonView.text.toString())
+                    if (isChecked) {
+                        viewModel.addAccommodation(accommodation)
                     } else {
-                        accommodationListLayout2.addView(checkBox)
+                        viewModel.removeAccommodation(accommodation)
                     }
                 }
-
-            }.invokeOnCompletion {
-                view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.GONE
-                setupSelectAllButton(view)
-                setupBungalow51Button(view)
-                btn.isEnabled = true
+                if (i < Accommodation.all().size / 2) {
+                    accommodationListLayout1.addView(checkBox)
+                } else {
+                    accommodationListLayout2.addView(checkBox)
+                }
             }
 
+        }.invokeOnCompletion {
+            view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.GONE
+            setupSelectAllButton(view)
+            setupBungalow51Button(view)
+            btn.isEnabled = true
         }
     }
 
@@ -230,9 +257,14 @@ class TimeFrameInputFragment : Fragment() {
             if (checkedId == R.id._5pm) {
                 viewModel.checkOutDateTime.hour = 17
             }
+            if (viewModel.alreadyChecked) {
+                checkAvailability(view)
+            }
+
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setupCheckOutDateSpinner(view: View) {
         val checkOutDate = view.findViewById<DatePicker>(R.id.check_out_date_picker)
 

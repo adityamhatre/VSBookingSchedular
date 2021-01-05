@@ -33,5 +33,6 @@
     <string name="bookings_on">Loading Bookings on</string>
     <string name="phone_number">Phone number</string>
     <string name="delete">Delete</string>
+    <string name="booking_created">Booking Created</string>
 
 </resources>

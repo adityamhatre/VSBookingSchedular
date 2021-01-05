@@ -14,6 +14,9 @@ class TimeFrameInputViewModel : ViewModel() {
     var selectedAllAccommodations = false
     var bungalow51Selected = false
     private val selectedAccommodations = MutableLiveData<Set<Accommodation>>(mutableSetOf())
+
+    var alreadyChecked = false
+
     fun addAccommodation(accommodation: Accommodation) {
         val value: HashSet<Accommodation> =
             (selectedAccommodations.value as HashSet<Accommodation>)
