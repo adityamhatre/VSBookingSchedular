@@ -101,10 +101,8 @@ class CalendarService(context: Context, account: Account) {
 
     fun createBooking(bookingDetails: BookingDetails) {
         bookingDetails.accommodations.forEach {
-            bookingDetails.eventIds.add(Pair(it.calendarId, UUID.randomUUID().toString()))
             calendarClient.events().insert(
                 it.calendarId, Event()
-                    .setId(bookingDetails.eventIds.last().second)
                     .setSummary(bookingDetails.bookingMainPerson)
                     .setExtendedProperties(
                         Event.ExtendedProperties()
