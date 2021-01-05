@@ -140,7 +140,7 @@ class TimeFrameInputFragment : Fragment() {
                     viewModel.checkOutDateTime
                 ).toSet()
 
-
+                viewModel.accommodationCheckBoxIds.clear()
                 Accommodation.all().forEachIndexed { i, it ->
                     val checkBox = CheckBox(requireContext())
                     viewModel.accommodationCheckBoxIds.add(View.generateViewId())
