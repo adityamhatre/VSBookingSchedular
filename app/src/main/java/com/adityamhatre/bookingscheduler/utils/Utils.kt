@@ -1,10 +1,46 @@
 package com.adityamhatre.bookingscheduler.utils
 
 import com.adityamhatre.bookingscheduler.dtos.AppDateTime
+import java.time.Instant
+import java.time.ZoneId
+import java.util.*
 
 class TwoDigitFormatter {
     companion object {
         fun toTwoDigits(arg: Int): String = if (arg >= 10) arg.toString() else "0$arg"
+    }
+}
+
+class Utils {
+    companion object{
+
+         fun toTitleCase(str:String): String {
+            val converted = str[0].toUpperCase() + str.substring(1).toLowerCase(Locale.getDefault())
+            return converted.split("_")
+                .takeIf { it.size > 1 }?.joinToString(" ") { toTitleCase(str) }
+                ?: converted
+        }
+         fun toHumanDate(instant: Instant): String {
+            val localDateTime = Date.from(instant)
+                .toInstant()
+                .atZone(ZoneId.of(ZoneId.SHORT_IDS["IST"]))
+                .toLocalDateTime()
+
+            val day =
+                if (localDateTime.dayOfMonth > 9) "${localDateTime.dayOfMonth}" else "0${localDateTime.dayOfMonth}"
+            val month = toTitleCase(localDateTime.month.name)
+            val year = localDateTime.year
+
+            val hourValue =
+                if (localDateTime.hour == 0) 12 else if (localDateTime.hour > 12) localDateTime.hour - 12 else localDateTime.hour
+            val hour = if (hourValue > 9) "$hourValue" else "0${hourValue}"
+            val minute =
+                if (localDateTime.minute > 9) "${localDateTime.minute}" else "0${localDateTime.minute}"
+            val amPm = if (localDateTime.hour >= 12) "PM" else "AM"
+
+            return "$day $month $year, $hour:$minute $amPm"
+        }
+
     }
 }
 

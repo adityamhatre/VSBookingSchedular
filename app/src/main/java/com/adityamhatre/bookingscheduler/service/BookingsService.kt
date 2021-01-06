@@ -16,6 +16,7 @@ class BookingsService {
     private val account = Application.getInstance().account
     private val calendarService =
         CalendarService(Application.getApplicationContext(), account)
+    private val notificationService = NotificationService()
 
     fun getAllBookingsForDate(date: Int, month: Int, year: Int): MutableList<BookingDetails> {
         var allBookings: Sequence<Event>
@@ -139,6 +140,7 @@ class BookingsService {
 
     fun createBooking(bookingDetails: BookingDetails) {
         calendarService.createBooking(bookingDetails)
+        notificationService.notifyNewBooking(bookingDetails)
     }
 
     fun removeBooking(bookingDetails: BookingDetails) {

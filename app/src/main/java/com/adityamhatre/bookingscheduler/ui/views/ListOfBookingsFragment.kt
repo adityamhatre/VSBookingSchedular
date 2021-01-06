@@ -38,8 +38,6 @@ class ListOfBookingsFragment : Fragment() {
                 viewModel.bookingsOn = AppDate(date, month, year)
             }
         }
-//        FirebaseMessaging.getInstance()
-//            .send(RemoteMessage.Builder(Application.getInstance().firebaseToken).build())
     }
 
     override fun onCreateView(
