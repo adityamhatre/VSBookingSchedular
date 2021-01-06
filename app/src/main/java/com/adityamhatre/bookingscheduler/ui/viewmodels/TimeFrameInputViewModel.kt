@@ -11,8 +11,9 @@ import kotlinx.coroutines.withContext
 
 class TimeFrameInputViewModel : ViewModel() {
     val accommodationCheckBoxIds = mutableListOf<Int>()
-    var selectedAllAccommodations = false
+    var selectWholeResort = false
     var bungalow51Selected = false
+    var bungalowAndRoomsSelected = false
     private val selectedAccommodations = MutableLiveData<Set<Accommodation>>(mutableSetOf())
 
     var alreadyChecked = false

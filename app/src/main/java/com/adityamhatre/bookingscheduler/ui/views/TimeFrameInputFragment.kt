@@ -196,25 +196,46 @@ class TimeFrameInputFragment : Fragment() {
             view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.GONE
             setupSelectAllButton(view)
             setupBungalow51Button(view)
+            setupBungalowAndRoomsButton(view)
             btn.isEnabled = true
+        }
+    }
+
+    private fun setupBungalowAndRoomsButton(view: View) {
+        val bungalowAndRoomsButton = view.findViewById<Button>(R.id.bungalow_and_rooms)
+        bungalowAndRoomsButton.visibility = View.VISIBLE
+        bungalowAndRoomsButton.isEnabled = viewModel.accommodationCheckBoxIds.subList(0, 10).all {
+            val checkBox = view.findViewById<CheckBox>(it)
+            checkBox.isEnabled
+        }
+        bungalowAndRoomsButton.setOnClickListener {
+            viewModel.bungalowAndRoomsSelected = !viewModel.bungalowAndRoomsSelected
+
+            viewModel.accommodationCheckBoxIds.subList(0, 10).filter {
+                view.findViewById<CheckBox>(it).isEnabled
+            }.map { view.findViewById<CheckBox>(it) }
+                .forEach {
+                    it.isChecked = viewModel.bungalowAndRoomsSelected
+                }
         }
     }
 
     private fun setupSelectAllButton(view: View) {
         val selectAllButton = view.findViewById<Button>(R.id.select_all)
-        val selectAllText = "Select All"
-        val deselectAllText = "Deselect All"
+        val selectAllText = getString(R.string.select_all)
+        val deselectAllText = getString(R.string.deselect_all)
         selectAllButton.visibility = View.VISIBLE
         selectAllButton.isEnabled = viewModel.accommodationCheckBoxIds.any {
             val checkBox = view.findViewById<CheckBox>(it)
             checkBox.isEnabled
         }
         selectAllButton.setOnClickListener {
-            viewModel.selectedAllAccommodations = !viewModel.selectedAllAccommodations
-            if (!viewModel.selectedAllAccommodations) {
+            viewModel.selectWholeResort = !viewModel.selectWholeResort
+            if (!viewModel.selectWholeResort) {
                 viewModel.bungalow51Selected = false
+                viewModel.bungalowAndRoomsSelected = false
             }
-            if (viewModel.selectedAllAccommodations) {
+            if (viewModel.selectWholeResort) {
                 selectAllButton.text = deselectAllText
             } else {
                 selectAllButton.text = selectAllText
@@ -223,7 +244,7 @@ class TimeFrameInputFragment : Fragment() {
                 view.findViewById<CheckBox>(it).isEnabled
             }.map { view.findViewById<CheckBox>(it) }
                 .forEach {
-                    it.isChecked = viewModel.selectedAllAccommodations
+                    it.isChecked = viewModel.selectWholeResort
                 }
         }
     }

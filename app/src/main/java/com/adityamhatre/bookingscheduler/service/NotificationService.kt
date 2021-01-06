@@ -9,7 +9,7 @@ import com.android.volley.toolbox.Volley
 import org.json.JSONObject
 
 class NotificationService {
-    val queue = Volley.newRequestQueue(Application.getApplicationContext())
+    private val queue = Volley.newRequestQueue(Application.getApplicationContext())
     fun notifyNewBooking(bookingDetails: BookingDetails) {
         val data = mapOf(
             "checkIn" to Utils.toHumanDate(bookingDetails.checkIn),

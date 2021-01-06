@@ -7,9 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.adityamhatre.bookingscheduler.Application
 import com.adityamhatre.bookingscheduler.R
+import com.adityamhatre.bookingscheduler.dtos.ApprovedPerson
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -64,6 +66,16 @@ class GoogleSignInFragment : Fragment() {
             return
         }
         Application.getInstance().account = account.account!!
+        if (!ApprovedPerson.isAuthorized(Application.getInstance().account.name)) {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setMessage("Error: You are not authorized to use this application. Contact developer")
+                .setCancelable(false)
+                .setPositiveButton("OK") { _, _ ->
+                    requireActivity().finish()
+                }
+            builder.create().show()
+            return
+        }
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.container, MainFragment.newInstance())
             .commit()

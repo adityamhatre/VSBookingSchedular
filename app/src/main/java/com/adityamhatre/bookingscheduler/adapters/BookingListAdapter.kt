@@ -67,8 +67,12 @@ class BookingListAdapter(
                 SpannableStringBuilder()
                     .bold { append("Accommodations: ") }
                     .append(
-                        Accommodation.bungalow51List(bookingDetails.accommodations)
-                            .joinToString { it.readableName })
+                        when {
+                            Accommodation.isWholeResort(bookingDetails.accommodations) -> "Whole Resort"
+                            Accommodation.isBungalowAndRooms(bookingDetails.accommodations) -> "Bungalow (5 + 1) + All other accommodations"
+                            else -> Accommodation.bungalow51List(bookingDetails.accommodations)
+                                .joinToString { it.readableName }
+                        })
             (itemView.findViewById<TextView>(R.id.accommodations)).text = accommodations
 
             (itemView.findViewById<TextView>(R.id.advance_payment_info)).text =

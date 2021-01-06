@@ -44,6 +44,23 @@ enum class Accommodation(val readableName: String, val calendarId: String) {
     BUNGALOW_5_1(
         "Bungalow (5 + 1)",
         Application.getApplicationContext().getString(R.string.bungalow_3_1_id)
+    ),
+    BIG_LAWN("Big Lawn", Application.getApplicationContext().getString(R.string.big_lawn)),
+    AARAM_LAWN(
+        "Lawn in front of Aaram Bungalow",
+        Application.getApplicationContext().getString(R.string.aaram_lawn)
+    ),
+    FOUR_ROOM_LAWN(
+        "Lawn in front of Four rooms",
+        Application.getApplicationContext().getString(R.string.four_room_lawn)
+    ),
+    NIVANT_ASHTAKON_LAWN(
+        "Lawn near Nivant & Ashtakon",
+        Application.getApplicationContext().getString(R.string.nivant_ashtakon_lawn)
+    ),
+    NEW_ASHTAKON_LAWN(
+        "Lawn near new ashtakon area",
+        Application.getApplicationContext().getString(R.string.new_ashtakon_lawn)
     );
 
     companion object {
@@ -65,6 +82,10 @@ enum class Accommodation(val readableName: String, val calendarId: String) {
             }
             return returnSet.toSet()
         }
+
+        fun isWholeResort(accommodations: Set<Accommodation>) = all().size == accommodations.size
+        fun isBungalowAndRooms(accommodations: Set<Accommodation>) =
+            !accommodations.any { it == BIG_LAWN || it == AARAM_LAWN || it == FOUR_ROOM_LAWN || it == NIVANT_ASHTAKON_LAWN || it == NEW_ASHTAKON_LAWN }
     }
 
 }
