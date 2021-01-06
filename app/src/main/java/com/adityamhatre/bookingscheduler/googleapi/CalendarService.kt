@@ -2,6 +2,7 @@ package com.adityamhatre.bookingscheduler.googleapi
 
 import android.accounts.Account
 import android.content.Context
+import android.util.Log
 import com.adityamhatre.bookingscheduler.Application
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.dtos.AppDateTime
@@ -11,10 +12,12 @@ import com.adityamhatre.bookingscheduler.utils.TimeStampConverter
 import com.google.api.client.extensions.android.http.AndroidHttp.newCompatibleTransport
 import com.google.api.client.extensions.android.json.AndroidJsonFactory
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.*
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
@@ -101,39 +104,55 @@ class CalendarService(context: Context, account: Account) {
 
     fun createBooking(bookingDetails: BookingDetails) {
         bookingDetails.accommodations.forEach {
-            calendarClient.events().insert(
-                it.calendarId, Event()
-                    .setSummary(bookingDetails.bookingMainPerson)
-                    .setExtendedProperties(
-                        Event.ExtendedProperties()
-                            .setPrivate(mapOf("id" to bookingDetails.bookingIdOnGoogle))
-                    )
-                    .setDescription(gson.toJson(bookingDetails))
-                    .setStart(
-                        EventDateTime().setDateTime(DateTime(Date.from(bookingDetails.checkIn)))
-                    ).setEnd(
-                        EventDateTime().setDateTime(DateTime(Date.from(bookingDetails.checkOut)))
-                    )
-            ).execute()
+            try {
+                calendarClient.events().insert(
+                    it.calendarId, Event()
+                        .setSummary(bookingDetails.bookingMainPerson)
+                        .setExtendedProperties(
+                            Event.ExtendedProperties()
+                                .setPrivate(mapOf("id" to bookingDetails.bookingIdOnGoogle))
+                        )
+                        .setDescription(gson.toJson(bookingDetails))
+                        .setStart(
+                            EventDateTime().setDateTime(DateTime(Date.from(bookingDetails.checkIn)))
+                        ).setEnd(
+                            EventDateTime().setDateTime(DateTime(Date.from(bookingDetails.checkOut)))
+                        )
+                ).execute()
+            } catch (gjre: GoogleJsonResponseException) {
+                Log.e("remove booking", gjre.details.message)
+                FirebaseCrashlytics.getInstance().recordException(gjre)
+            }
         }
 
     }
 
     fun removeBooking(bookingDetails: BookingDetails) {
         bookingDetails.eventIds.forEach {
-            calendarClient.events().delete(it.first, it.second)
-                .setSendNotifications(false)
-                .execute()
+            try {
+                calendarClient.events().delete(it.first, it.second)
+                    .setSendNotifications(false)
+                    .execute()
+            } catch (gjre: GoogleJsonResponseException) {
+                Log.e("remove booking", gjre.details.message)
+                FirebaseCrashlytics.getInstance().recordException(gjre)
+            }
         }
     }
 
     fun updateBooking(bookingDetails: BookingDetails) {
         bookingDetails.eventIds.forEach {
-            calendarClient.events().patch(
-                it.first, it.second, Event()
-                    .setSummary(bookingDetails.bookingMainPerson)
-                    .setDescription(gson.toJson(bookingDetails))
-            ).execute()
+            try {
+                calendarClient.events().patch(
+                    it.first, it.second, Event()
+                        .setSummary(bookingDetails.bookingMainPerson)
+                        .setDescription(gson.toJson(bookingDetails))
+                ).execute()
+            } catch (gjre: GoogleJsonResponseException) {
+                Log.e("update booking", gjre.details.message)
+                FirebaseCrashlytics.getInstance().recordException(gjre)
+            }
+
         }
     }
 }

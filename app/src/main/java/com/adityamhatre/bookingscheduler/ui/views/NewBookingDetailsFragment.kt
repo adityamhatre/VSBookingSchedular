@@ -17,6 +17,7 @@ import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.dtos.*
 import com.adityamhatre.bookingscheduler.enums.Accommodation
 import com.adityamhatre.bookingscheduler.ui.viewmodels.NewBookingDetailsViewModel
+import com.adityamhatre.bookingscheduler.utils.Utils
 import com.ebanx.swipebtn.SwipeButton
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
@@ -29,11 +30,11 @@ import kotlin.collections.ArrayList
 
 
 class NewBookingDetailsFragment(
-    val checkInDateTime: AppDateTime,
-    val checkOutDateTime: AppDateTime,
-    val accommodationSet: Set<Accommodation>,
+    private val checkInDateTime: AppDateTime,
+    private val checkOutDateTime: AppDateTime,
+    private val accommodationSet: Set<Accommodation>,
     val editMode: Boolean = false,
-    val originalBookingDetails: BookingDetails? = null,
+    private val originalBookingDetails: BookingDetails? = null,
     val onBookingDetailsUpdated: () -> Unit = { }
 ) : Fragment() {
 
@@ -74,7 +75,12 @@ class NewBookingDetailsFragment(
             viewModel.paymentType = PaymentType.fromTitleCase(text.toString())
         }
         paymentType.setAdapter(viewModel.getPaymentTypeAdapter(requireContext()))
-        paymentType.setText(paymentType.adapter.getItem(0).toString(), false)
+        val paymentTypeText = if (editMode)
+            PaymentType.values()
+                .filter { it == originalBookingDetails?.advancePaymentInfo?.paymentType }
+                .map { Utils.toTitleCase(it.name) }[0]
+        else paymentType.adapter.getItem(0).toString()
+        paymentType.setText(paymentTypeText, false)
 
         val bookingForEditText = view.findViewById<TextInputEditText>(R.id.booking_for)
         val bookingForContainer = view.findViewById<TextInputLayout>(R.id.booking_for_container)
@@ -158,7 +164,7 @@ class NewBookingDetailsFragment(
         }
 
         val bookButton = view.findViewById<SwipeButton>(R.id.book_button)
-        bookButton.setText(if (editMode) "Swipe to update booking" else "Swipe to book")
+        bookButton.setText(if (editMode) "Swipe to update" else "Swipe to book")
         viewModel.isValid().observe(viewLifecycleOwner) {
             bookButton.isEnabled = it
             bookButton.setDisabledDrawable(
