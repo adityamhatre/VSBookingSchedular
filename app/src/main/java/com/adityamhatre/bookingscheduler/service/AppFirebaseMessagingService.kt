@@ -26,7 +26,7 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
                     NotificationCompat.BigTextStyle()
                         .bigText("From ${remoteMessage.data["checkIn"]} to ${remoteMessage.data["checkOut"]}")
                 )
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
 
         with(NotificationManagerCompat.from(this)) {
             notify(Random.nextInt(100), builder.build())

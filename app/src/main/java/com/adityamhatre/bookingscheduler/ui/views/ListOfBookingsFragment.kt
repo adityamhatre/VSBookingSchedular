@@ -162,18 +162,29 @@ class ListOfBookingsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.VISIBLE
             bookingRecyclerView.adapter =
-                viewModel.getBookingListAdapter(confirmDelete = { position, onConfirm ->
-                    val builder = AlertDialog.Builder(requireContext())
-                    builder.setMessage("Are you sure you want to delete?")
-                        .setCancelable(false)
-                        .setPositiveButton("Yes") { _, _ ->
-                            viewLifecycleOwner.lifecycleScope.launch { onConfirm() }
-                            bookingRecyclerView.adapter?.notifyItemRemoved(position)
-                        }
-                        .setNegativeButton("No") { dialog, _ -> dialog.dismiss() }
-                    val alert = builder.create()
-                    alert.show()
-                })
+                viewModel.getBookingListAdapter(
+                    onItemEditClicked = { item, notifyDataChangedFnc ->
+                        requireActivity().supportFragmentManager
+                            .beginTransaction()
+                            .replace(
+                                R.id.container,
+                                NewBookingDetailsFragment.newInstance(item, notifyDataChangedFnc)
+                            )
+                            .addToBackStack(null)
+                            .commit()
+                    },
+                    confirmDelete = { position, onConfirm ->
+                        val builder = AlertDialog.Builder(requireContext())
+                        builder.setMessage("Are you sure you want to delete?")
+                            .setCancelable(false)
+                            .setPositiveButton("Yes") { _, _ ->
+                                viewLifecycleOwner.lifecycleScope.launch { onConfirm() }
+                                bookingRecyclerView.adapter?.notifyItemRemoved(position)
+                            }
+                            .setNegativeButton("No") { dialog, _ -> dialog.dismiss() }
+                        val alert = builder.create()
+                        alert.show()
+                    })
         }.invokeOnCompletion {
             bookingRecyclerView.postDelayed({
                 bookingRecyclerView.smoothScrollToPosition(

@@ -126,4 +126,14 @@ class CalendarService(context: Context, account: Account) {
                 .execute()
         }
     }
+
+    fun updateBooking(bookingDetails: BookingDetails) {
+        bookingDetails.eventIds.forEach {
+            calendarClient.events().patch(
+                it.first, it.second, Event()
+                    .setSummary(bookingDetails.bookingMainPerson)
+                    .setDescription(gson.toJson(bookingDetails))
+            ).execute()
+        }
+    }
 }

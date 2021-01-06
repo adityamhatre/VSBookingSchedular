@@ -61,6 +61,23 @@ class NewBookingDetailsViewModel : ViewModel() {
         }
     }
 
+    suspend fun updateBooking(bookingDetails: BookingDetails) {
+        withContext(Dispatchers.IO) {
+            bookingsService.updateBooking(bookingDetails)
+        }
+    }
+
+    fun fillValues(originalBookingDetails: BookingDetails) {
+        with(originalBookingDetails) {
+            bookingFor = bookingMainPerson
+            numberOfPeople = totalNumberOfPeople
+            paymentType = advancePaymentInfo.paymentType
+            advancePaymentAmount = advancePaymentInfo.amount
+            advancePaymentRequired = advancePaymentInfo.advanceReceived
+        }
+        phoneNumber = originalBookingDetails.phoneNumber
+    }
+
 }
 
 private fun String.toTitleCase(): String {

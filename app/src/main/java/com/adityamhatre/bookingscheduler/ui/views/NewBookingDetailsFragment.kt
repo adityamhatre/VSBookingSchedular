@@ -22,6 +22,8 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.ZoneId
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -29,7 +31,10 @@ import kotlin.collections.ArrayList
 class NewBookingDetailsFragment(
     val checkInDateTime: AppDateTime,
     val checkOutDateTime: AppDateTime,
-    val accommodationSet: Set<Accommodation>
+    val accommodationSet: Set<Accommodation>,
+    val editMode: Boolean = false,
+    val originalBookingDetails: BookingDetails? = null,
+    val onBookingDetailsUpdated: () -> Unit = { }
 ) : Fragment() {
 
     private val viewModel: NewBookingDetailsViewModel by viewModels()
@@ -38,6 +43,9 @@ class NewBookingDetailsFragment(
         viewModel.checkInDateTime = checkInDateTime
         viewModel.checkOutDateTime = checkOutDateTime
         viewModel.accommodationSet = accommodationSet
+        if (editMode) {
+            viewModel.fillValues(originalBookingDetails!!)
+        }
     }
 
     override fun onCreateView(
@@ -70,6 +78,9 @@ class NewBookingDetailsFragment(
 
         val bookingForEditText = view.findViewById<TextInputEditText>(R.id.booking_for)
         val bookingForContainer = view.findViewById<TextInputLayout>(R.id.booking_for_container)
+        if (editMode) {
+            bookingForEditText.setText(viewModel.bookingFor)
+        }
         bookingForEditText.doOnTextChanged { text, _, _, _ ->
             viewModel.bookingFor = text.toString()
             viewModel.validate()
@@ -79,6 +90,9 @@ class NewBookingDetailsFragment(
         val numberOfPeopleEditText = view.findViewById<TextInputEditText>(R.id.number_of_people)
         val numberOfPeopleContainer =
             view.findViewById<TextInputLayout>(R.id.number_of_people_container)
+        if (editMode) {
+            numberOfPeopleEditText.setText(viewModel.numberOfPeople.toString())
+        }
         numberOfPeopleEditText.doOnTextChanged { text, _, _, _ ->
             if (text.toString().isNotBlank()) {
                 viewModel.numberOfPeople = text.toString().toInt()
@@ -91,6 +105,9 @@ class NewBookingDetailsFragment(
         val phoneNumberEditText = view.findViewById<TextInputEditText>(R.id.phone_number)
         val phoneNumberContainer =
             view.findViewById<TextInputLayout>(R.id.phone_number_container)
+        if (editMode) {
+            phoneNumberEditText.setText(viewModel.phoneNumber)
+        }
         phoneNumberEditText.doOnTextChanged { text, _, _, _ ->
             viewModel.phoneNumber = text.toString()
             viewModel.validate()
@@ -132,7 +149,16 @@ class NewBookingDetailsFragment(
             viewModel.validate()
         }
 
+        if (editMode) {
+            if (viewModel.advancePaymentRequired) {
+                advanceAmountEditText.setText(viewModel.advancePaymentAmount.toString())
+            } else {
+                view.findViewById<RadioButton>(R.id.not_advance_payment).isChecked = true
+            }
+        }
+
         val bookButton = view.findViewById<SwipeButton>(R.id.book_button)
+        bookButton.setText(if (editMode) "Swipe to update booking" else "Swipe to book")
         viewModel.isValid().observe(viewLifecycleOwner) {
             bookButton.isEnabled = it
             bookButton.setDisabledDrawable(
@@ -180,29 +206,41 @@ class NewBookingDetailsFragment(
             }
 
             viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.createBooking(
-                    BookingDetails(
-                        accommodations = viewModel.accommodationSet,
-                        checkIn = viewModel.checkInDateTime.toInstant(),
-                        checkOut = viewModel.checkOutDateTime.toInstant(),
-                        bookingMainPerson = viewModel.bookingFor,
-                        totalNumberOfPeople = viewModel.numberOfPeople,
-                        bookedBy = ApprovedPerson.findByEmail(Application.getInstance().account.name),
-                        advancePaymentInfo = AdvancePayment(
-                            viewModel.advancePaymentRequired,
-                            viewModel.advancePaymentAmount,
-                            viewModel.paymentType
-                        ),
-                        phoneNumber = viewModel.phoneNumber,
-                        bookingIdOnGoogle = UUID.randomUUID().toString(),
-                        eventIds = ArrayList()
-                    )
+                val bookingDetails = BookingDetails(
+                    accommodations = viewModel.accommodationSet,
+                    checkIn = viewModel.checkInDateTime.toInstant(),
+                    checkOut = viewModel.checkOutDateTime.toInstant(),
+                    bookingMainPerson = viewModel.bookingFor,
+                    totalNumberOfPeople = viewModel.numberOfPeople,
+                    bookedBy = if (editMode) originalBookingDetails!!.bookedBy else ApprovedPerson.findByEmail(
+                        Application.getInstance().account.name
+                    ),
+                    advancePaymentInfo = AdvancePayment(
+                        viewModel.advancePaymentRequired,
+                        viewModel.advancePaymentAmount,
+                        viewModel.paymentType
+                    ),
+                    phoneNumber = viewModel.phoneNumber,
+                    bookingIdOnGoogle = UUID.randomUUID().toString(),
+                    eventIds = if (editMode) originalBookingDetails!!.eventIds else ArrayList()
                 )
+                if (editMode) {
+                    viewModel.updateBooking(bookingDetails)
+                    onBookingDetailsUpdated()
+                } else {
+                    viewModel.createBooking(bookingDetails)
+                }
             }.invokeOnCompletion {
                 loading.visibility = View.GONE
                 try {
-                    Toast.makeText(requireContext(), "Added new booking", Toast.LENGTH_SHORT).show()
-                    requireActivity().onBackPressed()
+                    Toast.makeText(
+                        requireContext(),
+                        if (!editMode) "Added new booking" else "Updated booking",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    if (!editMode) {
+                        requireActivity().onBackPressed()
+                    }
                     requireActivity().onBackPressed()
                 } catch (ie: IllegalStateException) {
                     Log.e(
@@ -224,6 +262,28 @@ class NewBookingDetailsFragment(
             accommodationSet: Set<Accommodation>
         ) =
             NewBookingDetailsFragment(checkInDateTime, checkOutDateTime, accommodationSet)
+
+        @JvmStatic
+        fun newInstance(
+            bookingDetails: BookingDetails,
+            onBookingDetailsUpdated: () -> Unit
+        ): NewBookingDetailsFragment {
+            return NewBookingDetailsFragment(
+                bookingDetails.checkIn.toAppDateTime(),
+                bookingDetails.checkIn.toAppDateTime(),
+                bookingDetails.accommodations,
+                editMode = true,
+                bookingDetails,
+                onBookingDetailsUpdated
+            )
+        }
     }
+}
+
+private fun Instant.toAppDateTime(): AppDateTime {
+    return with(
+        this.atZone(ZoneId.of(ZoneId.SHORT_IDS["IST"]))
+            .toLocalDateTime()
+    ) { AppDateTime(dayOfMonth, monthValue, year, hour, minute) }
 }
 

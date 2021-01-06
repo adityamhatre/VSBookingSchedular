@@ -146,4 +146,8 @@ class BookingsService {
     fun removeBooking(bookingDetails: BookingDetails) {
         calendarService.removeBooking(bookingDetails)
     }
+
+    fun updateBooking(bookingDetails: BookingDetails) {
+        calendarService.updateBooking(bookingDetails)
+    }
 }

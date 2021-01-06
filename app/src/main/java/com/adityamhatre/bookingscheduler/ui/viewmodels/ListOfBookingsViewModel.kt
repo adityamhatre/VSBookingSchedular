@@ -30,13 +30,16 @@ class ListOfBookingsViewModel : ViewModel() {
         return emptyList<BookingDetails>() as LinkedList<BookingDetails>
     }
 
-    suspend fun getBookingListAdapter(confirmDelete: (position: Int, onConfirm: suspend () -> Unit) -> Unit): BookingListAdapter {
+    suspend fun getBookingListAdapter(
+        onItemEditClicked: (item: BookingDetails, notifyDataChangedFnc: () -> Unit) -> Unit,
+        confirmDelete: (position: Int, onConfirm: suspend () -> Unit) -> Unit
+    ): BookingListAdapter {
         return withContext(Dispatchers.IO) {
             val bookings = getBookings()
             bookingsCount.postValue(bookings.size)
             BookingListAdapter(
                 bookings,
-                onItemClicked = { _, item -> println(item) },
+                onItemEdited = { item, afterItemEdit -> onItemEditClicked(item, afterItemEdit) },
                 onItemDeleted = { i, _ ->
                     confirmDelete(i) {
                         withContext(Dispatchers.IO) {
