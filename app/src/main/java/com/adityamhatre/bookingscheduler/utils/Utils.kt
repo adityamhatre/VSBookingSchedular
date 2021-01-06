@@ -12,15 +12,16 @@ class TwoDigitFormatter {
 }
 
 class Utils {
-    companion object{
+    companion object {
 
-         fun toTitleCase(str:String): String {
-            val converted = str[0].toUpperCase() + str.substring(1).toLowerCase(Locale.getDefault())
+        fun toTitleCase(str: String): String {
+            val converted = str[0].toUpperCase() + str.substring(1).toLowerCase(Locale.US)
             return converted.split("_")
-                .takeIf { it.size > 1 }?.joinToString(" ") { toTitleCase(str) }
+                .takeIf { it.size > 1 }?.joinToString(" ") { toTitleCase(it) }
                 ?: converted
         }
-         fun toHumanDate(instant: Instant): String {
+
+        fun toHumanDate(instant: Instant): String {
             val localDateTime = Date.from(instant)
                 .toInstant()
                 .atZone(ZoneId.of(ZoneId.SHORT_IDS["IST"]))
