@@ -3,6 +3,7 @@ package com.adityamhatre.bookingscheduler.dtos
 import android.text.SpannableStringBuilder
 import androidx.core.text.bold
 import com.adityamhatre.bookingscheduler.enums.Accommodation
+import org.json.JSONObject
 import java.io.Serializable
 import java.time.Instant
 import java.util.*
@@ -17,10 +18,26 @@ data class BookingDetails(
     val advancePaymentInfo: AdvancePayment,
     val phoneNumber: String,
     val bookingIdOnGoogle: String,
-    val eventIds: ArrayList<Pair<String,String>>, //calendarId, eventId
+    val eventIds: ArrayList<Pair<String, String>>, //calendarId, eventId
     var notes: String
     //ADD NEW FIELDS IN DESERIALIZER
-) : Serializable
+) : Serializable {
+    fun toNotificationServerJson(): JSONObject = //only string to string key values allowed
+        JSONObject()
+            .put("bookingIdOnGoogle", bookingIdOnGoogle)
+            .put("accommodations", accommodations.joinToString { it.readableName })
+            .put("checkIn", com.adityamhatre.bookingscheduler.utils.Utils.toHumanDate(checkIn))
+            .put("checkOut", com.adityamhatre.bookingscheduler.utils.Utils.toHumanDate(checkOut))
+            .put("bookingMainPerson", bookingMainPerson)
+            .put("totalNumberOfPeople", totalNumberOfPeople.toString())
+            .put("bookedBy", bookedBy.readableName)
+            .put("advancedPaymentReceived", advancePaymentInfo.advanceReceived.toString())
+            .put("advancedPaymentType", advancePaymentInfo.paymentType.name.toTitleCase())
+            .put("advancedPaymentAmount", advancePaymentInfo.amount.toString())
+            .put("phoneNumber", phoneNumber)
+            .put("notes", notes)
+
+}
 
 enum class PaymentType : Serializable {
     CASH, CHEQUE, BANK_DEPOSIT, NONE;

@@ -41,8 +41,10 @@
     <string name="delete">Delete</string>
     <string name="booking_created">Booking Created</string>
     <string name="booking_created_channel_id">35ae74c9-cd06-40d5-9c87-5d984ef8fa5a</string>
+    <string name="booking_updated_channel_id">1333ed11-3830-4ed2-a0da-c95ed3d4226b</string>
     <string name="edit">Edit</string>
     <string name="deselect_all">Deselect all</string>
     <string name="notes">Notes</string>
+    <string name="booking_updated">Booking Updated</string>
 
 </resources>

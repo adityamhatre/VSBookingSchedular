@@ -20,11 +20,32 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        if (!remoteMessage.data.containsKey("notificationId")) {
+            return
+        }
+        val notificationIdOfThisNotification = remoteMessage.data["notificationId"]
+
+        val sharedPrefs = getSharedPreferences("notifications", MODE_PRIVATE)
+        val lastSentNotificationId = sharedPrefs.getString("last-sent-notification-id", null)
+
+        if (lastSentNotificationId == null) {
+            sharedPrefs.edit()
+                .putString("last-sent-notification-id", notificationIdOfThisNotification).apply()
+        } else {
+            if (lastSentNotificationId == notificationIdOfThisNotification) {
+                return
+            } else {
+                sharedPrefs.edit()
+                    .putString("last-sent-notification-id", notificationIdOfThisNotification)
+                    .apply()
+            }
+        }
+
+        val topic = remoteMessage.data["topic"]
         val builder =
             NotificationCompat.Builder(this, getString(R.string.booking_created_channel_id))
                 .setSmallIcon(R.drawable.icon)
                 .setLargeIcon(BitmapFactory.decodeResource(this.resources, R.drawable.icon))
-                .setContentTitle("New booking for ${remoteMessage.data["bookingFor"]}")
                 .setContentText("From ${remoteMessage.data["checkIn"]} ...")
                 .setStyle(
                     NotificationCompat.BigTextStyle()
@@ -34,9 +55,24 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(PendingIntent.getActivity(this, 0, Intent(), 0));
 
-        val notificationId = Random.nextInt(100)
-        with(NotificationManagerCompat.from(this)) {
-            notify(notificationId, builder.build())
+        var init = true
+        when (topic) {
+            Application.getInstance().topics[0] -> {
+                builder.setChannelId(getString(R.string.booking_created_channel_id))
+                builder.setContentTitle("New booking for ${remoteMessage.data["bookingMainPerson"]}")
+            }
+            Application.getInstance().topics[1] -> {
+                builder.setChannelId(getString(R.string.booking_updated_channel_id))
+                builder.setContentTitle("Booking updated for ${remoteMessage.data["bookingMainPerson"]}")
+            }
+            else -> init = false
+        }
+
+        if (init) {
+            val notificationId = Random.nextInt(100)
+            with(NotificationManagerCompat.from(this)) {
+                notify(notificationId, builder.build())
+            }
         }
     }
 }

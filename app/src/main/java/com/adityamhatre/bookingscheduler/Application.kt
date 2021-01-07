@@ -25,21 +25,49 @@ class Application : Application() {
         .registerTypeAdapter(BookingDetails::class.java, BookingDetailsDeserializer())
         .create()
     lateinit var firebaseToken: String
+    val topics = listOf("new-booking-topic", "updated-booking-topic")
+
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = getString(R.string.booking_created)
-            val descriptionText = getString(R.string.booking_created)
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(
-                getString(R.string.booking_created_channel_id),
-                name,
-                importance
-            ).apply {
-                description = descriptionText
+            topics.forEach {
+                lateinit var name: String
+                lateinit var descriptionText: String
+                val importance = NotificationManager.IMPORTANCE_DEFAULT
+                lateinit var channel: NotificationChannel
+                var init = true
+                when (it) {
+                    topics[0] -> {
+                        name = getString(R.string.booking_created)
+                        descriptionText = getString(R.string.booking_created)
+                        channel = NotificationChannel(
+                            getString(R.string.booking_created_channel_id),
+                            name,
+                            importance
+                        ).apply {
+                            description = descriptionText
+                        }
+                    }
+                    topics[1] -> {
+                        name = getString(R.string.booking_updated)
+                        descriptionText = getString(R.string.booking_updated)
+                        channel = NotificationChannel(
+                            getString(R.string.booking_updated_channel_id),
+                            name,
+                            importance
+                        ).apply {
+                            description = descriptionText
+                        }
+                    }
+                    else -> init = false
+                }
+
+                if (init) {
+                    val notificationManager: NotificationManager =
+                        getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                    notificationManager.createNotificationChannel(channel)
+                }
             }
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+
         }
     }
 
@@ -54,15 +82,18 @@ class Application : Application() {
             val token = task.result
             firebaseToken = token.toString()
 
-            Firebase.messaging.subscribeToTopic("new-booking-topic")
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Log.i("Application", "Subscribed to new-booking-topic")
-                    } else {
-                        Log.e("Application", "Error in subscribing to new-booking-topic")
-                    }
 
-                }
+
+            topics.forEach {
+                Firebase.messaging.subscribeToTopic(it)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Log.i("Application", "Subscribed to $it")
+                        } else {
+                            Log.e("Application", "Error in subscribing to $it")
+                        }
+                    }
+            }
 
         })
     }

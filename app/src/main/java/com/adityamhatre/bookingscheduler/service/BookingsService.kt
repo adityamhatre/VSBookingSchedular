@@ -149,5 +149,6 @@ class BookingsService {
 
     fun updateBooking(bookingDetails: BookingDetails) {
         calendarService.updateBooking(bookingDetails)
+        notificationService.notifyUpdateBooking(bookingDetails)
     }
 }
