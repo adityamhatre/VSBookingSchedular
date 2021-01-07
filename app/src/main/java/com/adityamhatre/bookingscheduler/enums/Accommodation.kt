@@ -84,8 +84,6 @@ enum class Accommodation(val readableName: String, val calendarId: String) {
         }
 
         fun isWholeResort(accommodations: Set<Accommodation>) = all().size == accommodations.size
-        fun isBungalowAndRooms(accommodations: Set<Accommodation>) =
-            accommodations.any { it == BIG_LAWN || it == AARAM_LAWN || it == FOUR_ROOM_LAWN || it == NIVANT_ASHTAKON_LAWN || it == NEW_ASHTAKON_LAWN }
     }
 
 }

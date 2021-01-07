@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.adityamhatre.bookingscheduler.R
+import com.adityamhatre.bookingscheduler.adapters.BookingListAdapter
+import com.adityamhatre.bookingscheduler.dtos.AdapterContainer
 import com.adityamhatre.bookingscheduler.dtos.AppDateTime
 import com.adityamhatre.bookingscheduler.enums.Accommodation
 import com.adityamhatre.bookingscheduler.ui.viewmodels.TimeFrameInputViewModel
@@ -23,7 +25,7 @@ private const val DATE = "date"
 private const val MONTH = "month"
 private const val YEAR = "year"
 
-class TimeFrameInputFragment : Fragment() {
+class TimeFrameInputFragment(val adapterContainer: AdapterContainer<BookingListAdapter>) : Fragment() {
     private val viewModel: TimeFrameInputViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,7 +106,8 @@ class TimeFrameInputFragment : Fragment() {
                     NewBookingDetailsFragment.newInstance(
                         viewModel.checkInDateTime,
                         viewModel.checkOutDateTime,
-                        viewModel.getSelectedAccommodations().value!!
+                        viewModel.getSelectedAccommodations().value!!,
+                        adapterContainer = adapterContainer
                     )
                 )
                 .addToBackStack(null)
@@ -317,7 +320,7 @@ class TimeFrameInputFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(date: Int, month: Int, year: Int) = TimeFrameInputFragment().apply {
+        fun newInstance(date: Int, month: Int, year: Int, adapterContainer: AdapterContainer<BookingListAdapter>) = TimeFrameInputFragment(adapterContainer).apply {
             arguments = Bundle().apply {
                 putInt(DATE, date)
                 putInt(MONTH, month)

@@ -128,7 +128,8 @@ class ListOfBookingsFragment : Fragment() {
                     TimeFrameInputFragment.newInstance(
                         viewModel.bookingsOn.date,
                         viewModel.bookingsOn.month,
-                        year = 2021
+                        year = 2021,
+                        adapterContainer = viewModel.adapterContainer
                     )
                 )
                 .addToBackStack(null)
@@ -163,12 +164,16 @@ class ListOfBookingsFragment : Fragment() {
             view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.VISIBLE
             bookingRecyclerView.adapter =
                 viewModel.getBookingListAdapter(
-                    onItemEditClicked = { item, notifyDataChangedFnc ->
+                    afterUpdateComplete = { position, bookingDetailsList, adapter ->
                         requireActivity().supportFragmentManager
                             .beginTransaction()
                             .replace(
                                 R.id.container,
-                                NewBookingDetailsFragment.newInstance(item, notifyDataChangedFnc)
+                                NewBookingDetailsFragment.newInstance(
+                                    position,
+                                    bookingDetailsList,
+                                    adapter
+                                )
                             )
                             .addToBackStack(null)
                             .commit()

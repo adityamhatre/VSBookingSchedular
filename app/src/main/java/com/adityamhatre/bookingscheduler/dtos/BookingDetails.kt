@@ -18,7 +18,7 @@ data class BookingDetails(
     val phoneNumber: String,
     val bookingIdOnGoogle: String,
     val eventIds: ArrayList<Pair<String,String>>, //calendarId, eventId
-    val notes: String
+    var notes: String
     //ADD NEW FIELDS IN DESERIALIZER
 ) : Serializable
 

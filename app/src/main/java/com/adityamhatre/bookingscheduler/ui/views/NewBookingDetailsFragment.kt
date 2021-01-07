@@ -1,6 +1,7 @@
 package com.adityamhatre.bookingscheduler.ui.views
 
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import com.adityamhatre.bookingscheduler.Application
 import com.adityamhatre.bookingscheduler.MainActivity
 import com.adityamhatre.bookingscheduler.R
+import com.adityamhatre.bookingscheduler.adapters.BookingListAdapter
 import com.adityamhatre.bookingscheduler.dtos.*
 import com.adityamhatre.bookingscheduler.enums.Accommodation
 import com.adityamhatre.bookingscheduler.ui.viewmodels.NewBookingDetailsViewModel
@@ -35,7 +37,9 @@ class NewBookingDetailsFragment(
     private val accommodationSet: Set<Accommodation>,
     val editMode: Boolean = false,
     private val originalBookingDetails: BookingDetails? = null,
-    val onBookingDetailsUpdated: () -> Unit = { }
+    private val adapterPosition: Int = -1,
+    private val adapter: BookingListAdapter? = null,
+    private val adapterContainer: AdapterContainer<BookingListAdapter> = AdapterContainer()
 ) : Fragment() {
 
     private val viewModel: NewBookingDetailsViewModel by viewModels()
@@ -222,40 +226,38 @@ class NewBookingDetailsFragment(
                 return@setOnActiveListener
             }
 
-            viewLifecycleOwner.lifecycleScope.launch {
-                val bookingDetails = BookingDetails(
-                    accommodations = viewModel.accommodationSet,
-                    checkIn = viewModel.checkInDateTime.toInstant(),
-                    checkOut = viewModel.checkOutDateTime.toInstant(),
-                    bookingMainPerson = viewModel.bookingFor,
-                    totalNumberOfPeople = viewModel.numberOfPeople,
-                    bookedBy = if (editMode) originalBookingDetails!!.bookedBy else ApprovedPerson.findByEmail(
-                        Application.getInstance().account.name
-                    ),
-                    advancePaymentInfo = AdvancePayment(
-                        viewModel.advancePaymentRequired,
-                        viewModel.advancePaymentAmount,
-                        viewModel.paymentType
-                    ),
-                    phoneNumber = viewModel.phoneNumber,
-                    bookingIdOnGoogle = UUID.randomUUID().toString(),
-                    eventIds = if (editMode) originalBookingDetails!!.eventIds else ArrayList(),
-                    notes = viewModel.notes
-                )
-                if (editMode) {
-                    viewModel.updateBooking(bookingDetails)
-                    onBookingDetailsUpdated()
-                } else {
-                    viewModel.createBooking(bookingDetails)
-                }
-            }.invokeOnCompletion {
-                loading.visibility = View.GONE
+            val bookingDetails = BookingDetails(
+                accommodations = viewModel.accommodationSet,
+                checkIn = viewModel.checkInDateTime.toInstant(),
+                checkOut = viewModel.checkOutDateTime.toInstant(),
+                bookingMainPerson = viewModel.bookingFor,
+                totalNumberOfPeople = viewModel.numberOfPeople,
+                bookedBy = if (editMode) originalBookingDetails!!.bookedBy else ApprovedPerson.findByEmail(
+                    Application.getInstance().account.name
+                ),
+                advancePaymentInfo = AdvancePayment(
+                    viewModel.advancePaymentRequired,
+                    viewModel.advancePaymentAmount,
+                    viewModel.paymentType
+                ),
+                phoneNumber = viewModel.phoneNumber,
+                bookingIdOnGoogle = UUID.randomUUID().toString(),
+                eventIds = if (editMode) originalBookingDetails!!.eventIds else ArrayList(),
+                notes = viewModel.notes
+            )
+
+            Handler(requireActivity().mainLooper).postDelayed({
                 try {
                     Toast.makeText(
                         requireContext(),
                         if (!editMode) "Added new booking" else "Updated booking",
                         Toast.LENGTH_SHORT
                     ).show()
+                    if (editMode) {
+                        adapter?.setItem(adapterPosition, bookingDetails)
+                    } else {
+                        adapterContainer.getAdapter()?.addItem(bookingDetails)
+                    }
                     if (!editMode) {
                         requireActivity().onBackPressed()
                     }
@@ -266,6 +268,16 @@ class NewBookingDetailsFragment(
                         "Not attached to fragment"
                     )
                 }
+            }, 2000)
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                if (editMode) {
+                    viewModel.updateBooking(bookingDetails)
+                } else {
+                    viewModel.createBooking(bookingDetails)
+                }
+            }.invokeOnCompletion {
+                loading.visibility = View.GONE
             }
 
         }
@@ -277,14 +289,21 @@ class NewBookingDetailsFragment(
         fun newInstance(
             checkInDateTime: AppDateTime,
             checkOutDateTime: AppDateTime,
-            accommodationSet: Set<Accommodation>
+            accommodationSet: Set<Accommodation>,
+            adapterContainer: AdapterContainer<BookingListAdapter>
         ) =
-            NewBookingDetailsFragment(checkInDateTime, checkOutDateTime, accommodationSet)
+            NewBookingDetailsFragment(
+                checkInDateTime,
+                checkOutDateTime,
+                accommodationSet,
+                adapterContainer = adapterContainer
+            )
 
         @JvmStatic
         fun newInstance(
+            adapterPosition: Int,
             bookingDetails: BookingDetails,
-            onBookingDetailsUpdated: () -> Unit
+            adapter: BookingListAdapter
         ): NewBookingDetailsFragment {
             return NewBookingDetailsFragment(
                 bookingDetails.checkIn.toAppDateTime(),
@@ -292,7 +311,8 @@ class NewBookingDetailsFragment(
                 bookingDetails.accommodations,
                 editMode = true,
                 bookingDetails,
-                onBookingDetailsUpdated
+                adapterPosition,
+                adapter
             )
         }
     }

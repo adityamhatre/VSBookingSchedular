@@ -20,7 +20,6 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        super.onMessageReceived(remoteMessage)
         val builder =
             NotificationCompat.Builder(this, getString(R.string.booking_created_channel_id))
                 .setSmallIcon(R.drawable.icon)

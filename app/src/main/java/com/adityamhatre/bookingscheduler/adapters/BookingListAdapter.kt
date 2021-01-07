@@ -15,8 +15,8 @@ import java.time.ZoneId
 import java.util.*
 
 class BookingListAdapter(
-    private val bookingDetailsList: List<BookingDetails>,
-    private val onItemEdited: (BookingDetails, afterItemEdit: () -> Unit) -> Unit,
+    private val bookingDetailsList: MutableList<BookingDetails>,
+    private val onItemEdited: (Int, BookingDetails, BookingListAdapter) -> Unit,
     private val onItemDeleted: (Int, BookingDetails) -> Unit
 ) :
     RecyclerView.Adapter<BookingListAdapter.ViewHolder>() {
@@ -33,8 +33,28 @@ class BookingListAdapter(
 
     override fun getItemCount() = bookingDetailsList.size
 
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isNotEmpty()) {
+            for (payload in payloads) {
+                val map = payload as Map<*, *>
+                bookingDetailsList[position].notes = map["notes"].toString()
+                holder.bind(position)
+            }
+        } else {
+            super.onBindViewHolder(holder, position, payloads)
+        }
+    }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(position)
+    fun setItem(position: Int, bookingDetails: BookingDetails) {
+        bookingDetailsList[position] = bookingDetails
+        notifyItemChanged(position)
+    }
+
+    fun addItem(bookingDetails: BookingDetails) {
+        bookingDetailsList.add(bookingDetails)
+        notifyItemInserted(bookingDetailsList.size - 1)
+    }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(position: Int) {
@@ -69,7 +89,6 @@ class BookingListAdapter(
                     .append(
                         when {
                             Accommodation.isWholeResort(bookingDetails.accommodations) -> "Whole Resort"
-                            Accommodation.isBungalowAndRooms(bookingDetails.accommodations) -> "Bungalow (5 + 1) + All other accommodations"
                             else -> Accommodation.bungalow51List(bookingDetails.accommodations)
                                 .joinToString { it.readableName }
                         })
@@ -99,7 +118,7 @@ class BookingListAdapter(
             }
 
             (itemView.findViewById<TextView>(R.id.edit_button)).setOnClickListener {
-                onItemEdited(bookingDetails) { notifyItemChanged(adapterPosition) }
+                onItemEdited(adapterPosition, bookingDetails, this@BookingListAdapter)
             }
         }
     }
