@@ -28,6 +28,7 @@ class NewBookingDetailsViewModel : ViewModel() {
     var advancePaymentAmount: Int = -1
     var advancePaymentRequired: Boolean = true
     var phoneNumber = ""
+    var notes = ""
 
     private val isDataValid: MutableLiveData<Boolean> = MutableLiveData(false)
     fun validate() {
@@ -75,6 +76,7 @@ class NewBookingDetailsViewModel : ViewModel() {
             advancePaymentAmount = advancePaymentInfo.amount
             advancePaymentRequired = advancePaymentInfo.advanceReceived
         }
+        notes = originalBookingDetails.notes
         phoneNumber = originalBookingDetails.phoneNumber
     }
 

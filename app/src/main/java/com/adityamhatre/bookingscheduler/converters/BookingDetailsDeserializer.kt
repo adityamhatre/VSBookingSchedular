@@ -21,7 +21,7 @@ class BookingDetailsDeserializer : JsonDeserializer<BookingDetails> {
         val fields = deserialized.javaClass.declaredFields
 
         val mapOfNewFieldsToIsValueSet =
-            mutableMapOf("phoneNumber" to false, "bookingIdOnGoogle" to false, "eventIds" to false)
+            mutableMapOf("phoneNumber" to false, "bookingIdOnGoogle" to false, "eventIds" to false, "notes" to false)
         mapOfNewFieldsToIsValueSet.keys.forEach { newField ->
             val field = fields.first {
                 it.isAccessible = true
@@ -41,7 +41,8 @@ class BookingDetailsDeserializer : JsonDeserializer<BookingDetails> {
             phoneNumber = if (mapOfNewFieldsToIsValueSet["phoneNumber"] == true) deserialized.phoneNumber else "",
             bookingIdOnGoogle = if (mapOfNewFieldsToIsValueSet["bookingIdOnGoogle"] == true) deserialized.bookingIdOnGoogle else UUID.randomUUID()
                 .toString(),
-            eventIds = if (mapOfNewFieldsToIsValueSet["eventIds"] == true) deserialized.eventIds else ArrayList()
+            eventIds = if (mapOfNewFieldsToIsValueSet["eventIds"] == true) deserialized.eventIds else ArrayList(),
+            notes = if (mapOfNewFieldsToIsValueSet["notes"] == true) deserialized.notes else ""
         )
     }
 

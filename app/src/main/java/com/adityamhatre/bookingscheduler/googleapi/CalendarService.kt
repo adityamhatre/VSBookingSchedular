@@ -120,7 +120,7 @@ class CalendarService(context: Context, account: Account) {
                         )
                 ).execute()
             } catch (gjre: GoogleJsonResponseException) {
-                Log.e("remove booking", gjre.details.message)
+                Log.e("create booking", gjre.details.message)
                 FirebaseCrashlytics.getInstance().recordException(gjre)
             }
         }

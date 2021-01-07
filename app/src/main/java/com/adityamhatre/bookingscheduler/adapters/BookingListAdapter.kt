@@ -78,6 +78,16 @@ class BookingListAdapter(
             (itemView.findViewById<TextView>(R.id.advance_payment_info)).text =
                 bookingDetails.advancePaymentInfo.toSpannableString()
 
+            val notesView = (itemView.findViewById<TextView>(R.id.notes))
+            if (bookingDetails.notes.isNotEmpty()) {
+                val notes = SpannableStringBuilder()
+                    .bold { append("Notes:  ") }
+                    .append(bookingDetails.notes)
+                notesView.text = notes
+            } else {
+                notesView.visibility = View.GONE
+            }
+
             val bookedBy = SpannableStringBuilder()
                 .bold { append("Booked by ") }
                 .append(bookingDetails.bookedBy.readableName)

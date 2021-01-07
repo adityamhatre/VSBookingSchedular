@@ -163,6 +163,17 @@ class NewBookingDetailsFragment(
             }
         }
 
+        val notesEditText = view.findViewById<TextInputEditText>(R.id.notes)
+        val notesEditTextContainer =
+            view.findViewById<TextInputLayout>(R.id.notes_container)
+        if (editMode) {
+            notesEditText.setText(viewModel.notes)
+        }
+        notesEditText.doOnTextChanged { text, _, _, _ ->
+            viewModel.notes = text.toString()
+            viewModel.validate()
+        }
+
         val bookButton = view.findViewById<SwipeButton>(R.id.book_button)
         bookButton.setText(if (editMode) "Swipe to update" else "Swipe to book")
         viewModel.isValid().observe(viewLifecycleOwner) {
@@ -228,7 +239,8 @@ class NewBookingDetailsFragment(
                     ),
                     phoneNumber = viewModel.phoneNumber,
                     bookingIdOnGoogle = UUID.randomUUID().toString(),
-                    eventIds = if (editMode) originalBookingDetails!!.eventIds else ArrayList()
+                    eventIds = if (editMode) originalBookingDetails!!.eventIds else ArrayList(),
+                    notes = viewModel.notes
                 )
                 if (editMode) {
                     viewModel.updateBooking(bookingDetails)

@@ -43,5 +43,6 @@
     <string name="booking_created_channel_id">35ae74c9-cd06-40d5-9c87-5d984ef8fa5a</string>
     <string name="edit">Edit</string>
     <string name="deselect_all">Deselect all</string>
+    <string name="notes">Notes</string>
 
 </resources>
