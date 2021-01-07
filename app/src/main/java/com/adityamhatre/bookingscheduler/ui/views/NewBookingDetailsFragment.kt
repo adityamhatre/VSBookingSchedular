@@ -307,7 +307,7 @@ class NewBookingDetailsFragment(
         ): NewBookingDetailsFragment {
             return NewBookingDetailsFragment(
                 bookingDetails.checkIn.toAppDateTime(),
-                bookingDetails.checkIn.toAppDateTime(),
+                bookingDetails.checkOut.toAppDateTime(),
                 bookingDetails.accommodations,
                 editMode = true,
                 bookingDetails,
