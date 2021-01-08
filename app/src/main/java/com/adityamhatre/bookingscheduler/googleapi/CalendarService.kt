@@ -103,7 +103,7 @@ class CalendarService(context: Context, account: Account) {
     }
 
     fun createBooking(bookingDetails: BookingDetails) {
-        bookingDetails.accommodations.forEach {
+        bookingDetails.accommodations.parallelStream().forEach {
             try {
                 calendarClient.events().insert(
                     it.calendarId, Event()
@@ -128,7 +128,7 @@ class CalendarService(context: Context, account: Account) {
     }
 
     fun removeBooking(bookingDetails: BookingDetails) {
-        bookingDetails.eventIds.forEach {
+        bookingDetails.eventIds.parallelStream().forEach {
             try {
                 calendarClient.events().delete(it.first, it.second)
                     .setSendNotifications(false)
@@ -141,7 +141,7 @@ class CalendarService(context: Context, account: Account) {
     }
 
     fun updateBooking(bookingDetails: BookingDetails) {
-        bookingDetails.eventIds.forEach {
+        bookingDetails.eventIds.parallelStream().forEach {
             try {
                 calendarClient.events().patch(
                     it.first, it.second, Event()
