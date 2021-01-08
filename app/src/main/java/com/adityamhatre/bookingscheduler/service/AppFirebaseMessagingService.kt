@@ -9,6 +9,8 @@ import com.adityamhatre.bookingscheduler.Application
 import com.adityamhatre.bookingscheduler.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import java.time.Duration
+import java.time.Instant
 import kotlin.random.Random
 
 
@@ -23,20 +25,20 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
         if (!remoteMessage.data.containsKey("notificationId")) {
             return
         }
-        val notificationIdOfThisNotification = remoteMessage.data["notificationId"]
 
+        val now = Instant.now()
         val sharedPrefs = getSharedPreferences("notifications", MODE_PRIVATE)
-        val lastSentNotificationId = sharedPrefs.getString("last-sent-notification-id", null)
+        val lastSentNotificationOn = sharedPrefs.getLong("last-sent-notification-on", -1)
 
-        if (lastSentNotificationId == null) {
+        if (lastSentNotificationOn == -1L) {
             sharedPrefs.edit()
-                .putString("last-sent-notification-id", notificationIdOfThisNotification).apply()
+                .putLong("last-sent-notification-on", Instant.now().toEpochMilli()).apply()
         } else {
-            if (lastSentNotificationId == notificationIdOfThisNotification) {
+            if (Duration.between(now, Instant.ofEpochMilli(lastSentNotificationOn)).toMillis() < 500L) {
                 return
             } else {
                 sharedPrefs.edit()
-                    .putString("last-sent-notification-id", notificationIdOfThisNotification)
+                    .putLong("last-sent-notification-on", now.toEpochMilli())
                     .apply()
             }
         }

@@ -1,15 +1,22 @@
 package com.adityamhatre.bookingscheduler.ui.views
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.children
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.adityamhatre.bookingscheduler.Application
+import com.adityamhatre.bookingscheduler.BuildConfig
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.customViews.MonthView
 import com.adityamhatre.bookingscheduler.ui.viewmodels.MainFragmentViewModel
@@ -23,6 +30,32 @@ class MainFragment : Fragment() {
 
     private val viewModel: MainFragmentViewModel by viewModels()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!requireActivity().packageManager.canRequestPackageInstalls()) {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setMessage("Please click \"Allow from this source\" on the next screen to allow auto updates")
+                .setCancelable(false)
+                .setPositiveButton("OK") { _, _ ->
+                    startActivity(
+                        Intent(
+                            Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                            Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+                        )
+                    )
+                    Toast.makeText(
+                        requireContext(),
+                        "Please click \"Allow from this source\" to enable auto updates",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+            val alert = builder.create()
+            alert.show()
+        } else {
+            Application.getInstance().checkForUpdates()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
