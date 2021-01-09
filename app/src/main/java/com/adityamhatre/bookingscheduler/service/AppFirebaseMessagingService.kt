@@ -11,6 +11,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import java.time.Duration
 import java.time.Instant
+import kotlin.math.abs
 import kotlin.random.Random
 
 
@@ -34,7 +35,7 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
             sharedPrefs.edit()
                 .putLong("last-sent-notification-on", Instant.now().toEpochMilli()).apply()
         } else {
-            if (Duration.between(now, Instant.ofEpochMilli(lastSentNotificationOn)).toMillis() < 500L) {
+            if (abs(Duration.between(now, Instant.ofEpochMilli(lastSentNotificationOn)).toMillis()) < 500L) {
                 return
             } else {
                 sharedPrefs.edit()
