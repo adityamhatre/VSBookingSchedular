@@ -22,6 +22,9 @@ data class AppDateTime(
             TwoDigitFormatter.toTwoDigits(if (hour == 0) 12 else hour % 12)
         }:${TwoDigitFormatter.toTwoDigits(minute)} ${if (hour in 0..12) "AM" else "PM"}"
 
+    fun addOneDay() = with(LocalDateTime.of(year, month, date, hour, minute).plusDays(1)) {
+        AppDateTime(dayOfMonth, monthValue, year, hour, minute)
+    }
 
     override fun compareTo(other: AppDateTime): Int {
         val thisDateTime =

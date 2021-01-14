@@ -61,10 +61,13 @@ enum class Accommodation(val readableName: String, val calendarId: String) {
     NEW_ASHTAKON_LAWN(
         "Lawn near new ashtakon area",
         Application.getApplicationContext().getString(R.string.new_ashtakon_lawn)
+    ),
+    ONE_DAY("One Day",
+        Application.getApplicationContext().getString(R.string.one_day)
     );
 
     companion object {
-        fun all() = values().filter { it != BUNGALOW_5_1 }.map { it }
+        fun all() = values().filter { it !in arrayOf(ONE_DAY, BUNGALOW_5_1) }.map { it }
         fun from(key: String) = all().first { key.startsWith(it.calendarId) }
         fun byReadableName(text: String) = all().first { it.readableName == text }
         fun bungalow51List(accommodations: Set<Accommodation>): Set<Accommodation> {

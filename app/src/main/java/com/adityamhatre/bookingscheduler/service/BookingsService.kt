@@ -135,6 +135,8 @@ class BookingsService {
     }
 
     fun checkAvailability(timeMin: AppDateTime, timeMax: AppDateTime): List<Accommodation> {
+        println(timeMin)
+        println(timeMax)
         return calendarService.checkAvailability(timeMin, timeMax)
     }
 

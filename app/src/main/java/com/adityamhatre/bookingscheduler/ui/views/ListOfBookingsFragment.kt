@@ -111,6 +111,7 @@ class ListOfBookingsFragment : Fragment() {
 
     private fun setupFab(view: View) {
         val newBooking = view.findViewById<FabOption>(R.id.new_booking)
+        val oneDayBooking = view.findViewById<FabOption>(R.id.one_day_booking)
         val viewBookingsInMonth = view.findViewById<FabOption>(R.id.view_all_bookings_in_month)
 
         if (viewModel.bookingsOn.isForMonth()) {
@@ -129,7 +130,24 @@ class ListOfBookingsFragment : Fragment() {
                         viewModel.bookingsOn.date,
                         viewModel.bookingsOn.month,
                         year = 2021,
-                        adapterContainer = viewModel.adapterContainer
+                        adapterContainer = viewModel.adapterContainer,
+                    )
+                )
+                .addToBackStack(null)
+                .commit()
+        }
+
+        oneDayBooking.setOnClickListener {
+            requireActivity().supportFragmentManager
+                .beginTransaction()
+                .replace(
+                    R.id.container,
+                    TimeFrameInputFragment.newInstance(
+                        viewModel.bookingsOn.date,
+                        viewModel.bookingsOn.month,
+                        year = 2021,
+                        adapterContainer = viewModel.adapterContainer,
+                        oneDayBooking = true
                     )
                 )
                 .addToBackStack(null)

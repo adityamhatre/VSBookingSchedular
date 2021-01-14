@@ -46,5 +46,9 @@
     <string name="deselect_all">Deselect all</string>
     <string name="notes">Notes</string>
     <string name="booking_updated">Booking Updated</string>
+    <string name="one_day">ulubradne2vmfb409ffhdchojk@group.calendar.google.com</string>
+    <string name="one_day_booking_select_one_of_the_timings">One day booking<br/>Select one of the timings</string>
+    <string name="_9_30_am_to_5_00_pm">9:30 AM to 5:00 PM</string>
+    <string name="_4_00_pm_to_12_00_am">4:00 PM to 12:00 AM</string>
 
 </resources>

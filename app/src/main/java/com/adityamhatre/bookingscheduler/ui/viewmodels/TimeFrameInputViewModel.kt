@@ -18,6 +18,8 @@ class TimeFrameInputViewModel : ViewModel() {
 
     var alreadyChecked = false
 
+    var isOneDayBooking = false
+
     fun addAccommodation(accommodation: Accommodation) {
         val value: HashSet<Accommodation> =
             (selectedAccommodations.value as HashSet<Accommodation>)

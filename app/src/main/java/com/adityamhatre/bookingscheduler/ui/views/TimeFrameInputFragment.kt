@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -24,8 +25,10 @@ import java.util.*
 private const val DATE = "date"
 private const val MONTH = "month"
 private const val YEAR = "year"
+private const val ONE_DAY_BOOKING = "one_day_booking"
 
-class TimeFrameInputFragment(val adapterContainer: AdapterContainer<BookingListAdapter>) : Fragment() {
+class TimeFrameInputFragment(private val adapterContainer: AdapterContainer<BookingListAdapter>) :
+    Fragment() {
     private val viewModel: TimeFrameInputViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +37,8 @@ class TimeFrameInputFragment(val adapterContainer: AdapterContainer<BookingListA
                 val date = getInt(DATE, -1)
                 val month = getInt(MONTH, -1)
                 val year = getInt(YEAR, -1)
+                val isOneDayBooking = getBoolean(ONE_DAY_BOOKING, false)
+
                 viewModel.checkInDateTime = AppDateTime(
                     date,
                     month,
@@ -48,6 +53,8 @@ class TimeFrameInputFragment(val adapterContainer: AdapterContainer<BookingListA
                     if (viewModel.checkOutDateTime.hour == -1) 17 else viewModel.checkOutDateTime.hour,
                     if (viewModel.checkOutDateTime.minute == -1) 0 else viewModel.checkOutDateTime.minute
                 )
+                viewModel.isOneDayBooking = isOneDayBooking
+
             }
         }
 
@@ -64,8 +71,8 @@ class TimeFrameInputFragment(val adapterContainer: AdapterContainer<BookingListA
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupView(view)
         viewModel.clearAccommodations()
+        setupView(view)
         viewModel.alreadyChecked = false
     }
 
@@ -78,6 +85,53 @@ class TimeFrameInputFragment(val adapterContainer: AdapterContainer<BookingListA
         setupCheckAvailabilityButton(view)
         setupNext(view)
         setupObservers(view)
+        setupAccommodationGrid(view)
+        setupOneDayBooking(view)
+    }
+
+    private fun setupOneDayBooking(view: View) {
+        val oneDayBookingContainer = view.findViewById<ConstraintLayout>(R.id.one_day_container)
+        val notOneDayBookingContainer =
+            view.findViewById<ConstraintLayout>(R.id.not_one_day_container)
+        val oneDayTimingRadioGroup =
+            view.findViewById<RadioGroup>(R.id.one_day_booking_timing_group)
+
+        oneDayBookingContainer.visibility =
+            if (viewModel.isOneDayBooking) View.VISIBLE else View.GONE
+
+        notOneDayBookingContainer.visibility =
+            if (!viewModel.isOneDayBooking) View.VISIBLE else View.GONE
+
+        if (viewModel.isOneDayBooking) {
+            viewModel.addAccommodation(Accommodation.ONE_DAY)
+        }
+
+        oneDayTimingRadioGroup.setOnCheckedChangeListener { _, id ->
+            when (id) {
+                R.id.one_day_booking_timing_9_30_am_to_5_00_pm -> {
+                    viewModel.checkInDateTime.hour = 9
+                    viewModel.checkInDateTime.minute = 30
+
+                    viewModel.checkOutDateTime = viewModel.checkInDateTime.copy()
+                    viewModel.checkOutDateTime.hour = 17
+                    viewModel.checkOutDateTime.minute = 0
+                }
+                R.id.one_day_booking_timing_4_00_pm_to_12_00_am -> {
+                    viewModel.checkInDateTime.hour = 16
+                    viewModel.checkInDateTime.minute = 0
+
+                    viewModel.checkOutDateTime = viewModel.checkInDateTime.addOneDay()
+                    viewModel.checkOutDateTime.hour = 0
+                    viewModel.checkOutDateTime.minute = 0
+                }
+                else -> {
+                }
+            }
+
+        }
+    }
+
+    private fun setupAccommodationGrid(view: View) {
         val accommodationListLayout1 =
             view.findViewById<LinearLayout>(R.id.accommodation_list1)
         accommodationListLayout1.removeAllViews()
@@ -138,8 +192,17 @@ class TimeFrameInputFragment(val adapterContainer: AdapterContainer<BookingListA
     }
 
     private fun setupCheckAvailabilityButton(view: View) {
-        view.findViewById<Button>(R.id.check_availability)
-            .setOnClickListener { checkAvailability(view, firstTimeCheck = true) }
+        val checkAvailabilityButton = view.findViewById<Button>(R.id.check_availability)
+        checkAvailabilityButton.visibility =
+            if (!viewModel.isOneDayBooking) View.VISIBLE else View.GONE
+
+        checkAvailabilityButton.setOnClickListener {
+            checkAvailability(
+                view,
+                firstTimeCheck = true
+            )
+        }
+
     }
 
     private fun checkAvailability(view: View, firstTimeCheck: Boolean = false) {
@@ -193,6 +256,9 @@ class TimeFrameInputFragment(val adapterContainer: AdapterContainer<BookingListA
                 } else {
                     accommodationListLayout2.addView(checkBox)
                 }
+            }
+            if (viewModel.isOneDayBooking) {
+                viewModel.addAccommodation(Accommodation.ONE_DAY)
             }
 
         }.invokeOnCompletion {
@@ -320,11 +386,18 @@ class TimeFrameInputFragment(val adapterContainer: AdapterContainer<BookingListA
     }
 
     companion object {
-        fun newInstance(date: Int, month: Int, year: Int, adapterContainer: AdapterContainer<BookingListAdapter>) = TimeFrameInputFragment(adapterContainer).apply {
+        fun newInstance(
+            date: Int,
+            month: Int,
+            year: Int,
+            adapterContainer: AdapterContainer<BookingListAdapter>,
+            oneDayBooking: Boolean = false
+        ) = TimeFrameInputFragment(adapterContainer).apply {
             arguments = Bundle().apply {
                 putInt(DATE, date)
                 putInt(MONTH, month)
                 putInt(YEAR, year)
+                putBoolean(ONE_DAY_BOOKING, oneDayBooking)
             }
         }
     }
