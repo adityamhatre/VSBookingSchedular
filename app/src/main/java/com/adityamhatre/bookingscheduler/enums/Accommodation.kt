@@ -67,6 +67,7 @@ enum class Accommodation(val readableName: String, val calendarId: String) {
     );
 
     companion object {
+        fun allForGettingBookings() = values().filter { it !in arrayOf(BUNGALOW_5_1) }.map { it }
         fun all() = values().filter { it !in arrayOf(ONE_DAY, BUNGALOW_5_1) }.map { it }
         fun from(key: String) = all().first { key.startsWith(it.calendarId) }
         fun byReadableName(text: String) = all().first { it.readableName == text }

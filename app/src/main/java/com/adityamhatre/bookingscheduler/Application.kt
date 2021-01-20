@@ -15,13 +15,14 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.ktx.messaging
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import java.time.Instant
 import java.util.*
 
 class Application : Application() {
     lateinit var account: Account
-    val gson = GsonBuilder()
+    val gson: Gson = GsonBuilder()
         .registerTypeAdapter(Instant::class.java, InstantTypeConverter())
         .registerTypeAdapter(BookingDetails::class.java, BookingDetailsDeserializer())
         .create()

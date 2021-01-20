@@ -22,7 +22,7 @@ class BookingsService {
         var allBookings: Sequence<Event>
         val filteredBookings = mutableSetOf<BookingDetails>()
         val map = mutableMapOf<String, HashSet<Pair<String, String>>>()
-        Accommodation.all().parallelStream().forEach { accommodationIt ->
+        Accommodation.allForGettingBookings().parallelStream().forEach { accommodationIt ->
             allBookings = calendarService.getBookingsForDate(
                 accommodationIt.calendarId,
                 date,
@@ -81,7 +81,7 @@ class BookingsService {
         var allBookings: Sequence<Event>
         val filteredBookings = mutableSetOf<BookingDetails>()
         val map = mutableMapOf<String, HashSet<Pair<String, String>>>()
-        Accommodation.all().parallelStream().forEach { accommodationIt ->
+        Accommodation.allForGettingBookings().parallelStream().forEach { accommodationIt ->
             allBookings = calendarService.getBookingsForMonth(
                 accommodationIt.calendarId,
                 month,
