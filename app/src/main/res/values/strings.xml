@@ -16,6 +16,7 @@
     <string name="four_room_lawn">ii18qos5pa9hdh5hm619t68pec@group.calendar.google.com</string>
     <string name="nivant_ashtakon_lawn">3ek503eid6a2npeekoleqc763c@group.calendar.google.com</string>
     <string name="new_ashtakon_lawn">spknm9j03ucol6qfv5fpcdrn84@group.calendar.google.com</string>
+    <string name="one_day">ulubradne2vmfb409ffhdchojk@group.calendar.google.com</string>
 
     <string name="_9_00_am">9:00 AM</string>
     <string name="_5_00_pm">5:00 PM</string>
@@ -46,7 +47,6 @@
     <string name="deselect_all">Deselect all</string>
     <string name="notes">Notes</string>
     <string name="booking_updated">Booking Updated</string>
-    <string name="one_day">ulubradne2vmfb409ffhdchojk@group.calendar.google.com</string>
     <string name="one_day_booking_select_one_of_the_timings">One day booking<br/>Select one of the timings</string>
     <string name="_9_30_am_to_5_00_pm">9:30 AM to 5:00 PM</string>
     <string name="_4_00_pm_to_12_00_am">4:00 PM to 12:00 AM</string>
