@@ -28,7 +28,7 @@ class Application : Application() {
         .create()
     lateinit var firebaseToken: String
     private val herokuService by lazy { HerokuService(this.applicationContext) }
-    val topics = listOf("new-booking-topic", "updated-booking-topic")
+    val topics = listOf("new-booking-topic", "updated-booking-topic", "tomorrow-booking-topic")
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -55,6 +55,17 @@ class Application : Application() {
                         descriptionText = getString(R.string.booking_updated)
                         channel = NotificationChannel(
                             getString(R.string.booking_updated_channel_id),
+                            name,
+                            importance
+                        ).apply {
+                            description = descriptionText
+                        }
+                    }
+                    topics[2] -> {
+                        name = getString(R.string.booking_tomorrow)
+                        descriptionText = getString(R.string.booking_tomorrow)
+                        channel = NotificationChannel(
+                            getString(R.string.booking_tomorrow_channel_id),
                             name,
                             importance
                         ).apply {

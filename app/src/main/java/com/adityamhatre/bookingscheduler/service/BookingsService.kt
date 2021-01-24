@@ -147,6 +147,7 @@ class BookingsService {
 
     fun removeBooking(bookingDetails: BookingDetails) {
         calendarService.removeBooking(bookingDetails)
+        herokuService.removeBooking(bookingDetails)
     }
 
     fun updateBooking(bookingDetails: BookingDetails) {

@@ -241,7 +241,7 @@ class NewBookingDetailsFragment(
                     viewModel.paymentType
                 ),
                 phoneNumber = viewModel.phoneNumber,
-                bookingIdOnGoogle = UUID.randomUUID().toString(),
+                bookingIdOnGoogle = viewModel.bookingIdOnGoogle,
                 eventIds = if (editMode) originalBookingDetails!!.eventIds else ArrayList(),
                 notes = viewModel.notes
             )

@@ -68,6 +68,10 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
                 builder.setChannelId(getString(R.string.booking_updated_channel_id))
                 builder.setContentTitle("Booking updated for ${remoteMessage.data["bookingMainPerson"]}")
             }
+            Application.getInstance().topics[2] -> {
+                builder.setChannelId(getString(R.string.booking_updated_channel_id))
+                builder.setContentTitle("Booking for ${remoteMessage.data["bookingMainPerson"]} is tomorrow!")
+            }
             else -> init = false
         }
 

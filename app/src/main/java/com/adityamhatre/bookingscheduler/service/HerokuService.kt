@@ -49,6 +49,18 @@ class HerokuService(context: Context) {
         queue.add(request)
     }
 
+    fun removeBooking(bookingDetails: BookingDetails) {
+        val request = JsonObjectRequest(
+            Request.Method.POST,
+            "$baseUrl/deleteBooking",
+            bookingDetails.toNotificationServerJson(),
+            {},
+            {}
+        )
+
+        queue.add(request)
+    }
+
     fun checkForUpdates() {
         val buildNumber = BuildConfig.VERSION_CODE
         val request = StringRequest(Request.Method.GET,
