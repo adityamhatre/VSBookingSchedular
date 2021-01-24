@@ -36,7 +36,8 @@ class ListOfBookingsViewModel : ViewModel() {
 
     suspend fun getBookingListAdapter(
         afterUpdateComplete: (position: Int, updatedBookingDetails: BookingDetails, adapter: BookingListAdapter) -> Unit,
-        confirmDelete: (position: Int, onConfirm: suspend () -> Unit) -> Unit
+        confirmDelete: (position: Int, onConfirm: suspend () -> Unit) -> Unit,
+        onClick: (BookingDetails) -> Unit
     ): BookingListAdapter {
         return withContext(Dispatchers.IO) {
             this@ListOfBookingsViewModel.bookingsList =
@@ -56,7 +57,9 @@ class ListOfBookingsViewModel : ViewModel() {
                                 bookingDetailsService.removeBooking(bookings.removeAt(i))
                             }
                         }
-                    })
+                    },
+                    onClick = onClick
+                )
             )
 
             val adapter = this@ListOfBookingsViewModel.adapterContainer.getAdapter()!!

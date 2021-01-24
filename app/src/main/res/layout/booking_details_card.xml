@@ -108,6 +108,15 @@
             android:paddingEnd="8dp">
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/share_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/share"
+                android:visibility="gone"
+                app:icon="@drawable/share" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/edit_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -122,6 +131,15 @@
                 android:text="@string/delete"
                 app:icon="@drawable/delete" />
         </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:padding="8dp"
+            android:id="@+id/tracking_id"
+            android:visibility="gone"
+            android:text="@string/booking_created" />
 
     </LinearLayout>
 

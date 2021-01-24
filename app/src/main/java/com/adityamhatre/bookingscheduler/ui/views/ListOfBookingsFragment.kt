@@ -207,7 +207,18 @@ class ListOfBookingsFragment : Fragment() {
                             .setNegativeButton("No") { dialog, _ -> dialog.dismiss() }
                         val alert = builder.create()
                         alert.show()
-                    })
+                    },
+                    onClick = { bookingDetails ->
+                        requireActivity().supportFragmentManager
+                            .beginTransaction()
+                            .replace(
+                                R.id.container,
+                                ViewBookingDetails.newInstance(bookingDetails)
+                            )
+                            .addToBackStack(null)
+                            .commit()
+                    }
+                )
         }.invokeOnCompletion {
             bookingRecyclerView.postDelayed({
                 bookingRecyclerView.smoothScrollToPosition(

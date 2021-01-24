@@ -17,7 +17,8 @@ import java.util.*
 class BookingListAdapter(
     private val bookingDetailsList: MutableList<BookingDetails>,
     private val onItemEdited: (Int, BookingDetails, BookingListAdapter) -> Unit,
-    private val onItemDeleted: (Int, BookingDetails) -> Unit
+    private val onItemDeleted: (Int, BookingDetails) -> Unit,
+    private val onClick: (BookingDetails) -> Unit
 ) :
     RecyclerView.Adapter<BookingListAdapter.ViewHolder>() {
 
@@ -120,6 +121,8 @@ class BookingListAdapter(
             (itemView.findViewById<TextView>(R.id.edit_button)).setOnClickListener {
                 onItemEdited(adapterPosition, bookingDetails, this@BookingListAdapter)
             }
+
+            itemView.setOnClickListener { onClick(bookingDetails) }
         }
     }
 }

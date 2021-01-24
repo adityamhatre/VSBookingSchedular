@@ -52,5 +52,6 @@
     <string name="_4_00_pm_to_12_00_am">4:00 PM to 12:00 AM</string>
     <string name="booking_tomorrow">Tomorrow Booking</string>
     <string name="booking_tomorrow_channel_id">dd70ff9c-f752-4aef-9362-745ba10baf12</string>
+    <string name="share">Share</string>
 
 </resources>
