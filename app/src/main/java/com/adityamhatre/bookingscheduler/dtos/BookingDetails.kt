@@ -56,11 +56,12 @@ data class AdvancePayment(
     val amount: Int = -1,
     val paymentType: PaymentType = PaymentType.NONE
 ) : Serializable {
-    fun toSpannableString(): SpannableStringBuilder {
+    fun toSpannableString(receiptMode: Boolean = false): SpannableStringBuilder {
         if (!advanceReceived) {
             return SpannableStringBuilder().append("No advance payment received")
         }
         return SpannableStringBuilder()
+            .bold { if(receiptMode) append("Advance payment: ") }
             .bold { append("₹$amount ") }
             .append("received by ")
             .bold { append(paymentType.name.toTitleCase()) }

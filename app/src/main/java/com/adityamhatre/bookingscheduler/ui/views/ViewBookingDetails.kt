@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
 import androidx.core.text.bold
 import androidx.fragment.app.Fragment
@@ -83,7 +84,7 @@ class ViewBookingDetails(private val bookingDetails: BookingDetails) : Fragment(
         (itemView.findViewById<TextView>(R.id.accommodations)).text = accommodations
 
         (itemView.findViewById<TextView>(R.id.advance_payment_info)).text =
-            bookingDetails.advancePaymentInfo.toSpannableString()
+            bookingDetails.advancePaymentInfo.toSpannableString(receiptMode=true)
 
         val notesView = (itemView.findViewById<TextView>(R.id.notes))
         if (bookingDetails.notes.isNotEmpty()) {
@@ -116,6 +117,9 @@ class ViewBookingDetails(private val bookingDetails: BookingDetails) : Fragment(
         val trackingIdView = itemView.findViewById<TextView>(R.id.tracking_id)
         trackingIdView.visibility = View.VISIBLE
         trackingIdView.text = bookingDetails.bookingIdOnGoogle
+
+        itemView.findViewById<ConstraintLayout>(R.id.header).visibility = View.VISIBLE
+        itemView.findViewById<TextView>(R.id.footer).visibility = View.VISIBLE
 
     }
 
