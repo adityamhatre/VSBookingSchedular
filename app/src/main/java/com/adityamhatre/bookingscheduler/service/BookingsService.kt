@@ -140,9 +140,10 @@ class BookingsService {
         return calendarService.checkAvailability(timeMin, timeMax)
     }
 
-    fun createBooking(bookingDetails: BookingDetails) {
-        calendarService.createBooking(bookingDetails)
+    fun createBooking(bookingDetails: BookingDetails): MutableList<Pair<String, String>> {
+        val returnIds = calendarService.createBooking(bookingDetails)
         herokuService.notifyNewBooking(bookingDetails)
+        return returnIds
     }
 
     fun removeBooking(bookingDetails: BookingDetails) {

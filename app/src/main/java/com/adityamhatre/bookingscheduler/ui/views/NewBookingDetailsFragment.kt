@@ -248,20 +248,7 @@ class NewBookingDetailsFragment(
 
             Handler(requireActivity().mainLooper).postDelayed({
                 try {
-                    Toast.makeText(
-                        requireContext(),
-                        if (!editMode) "Added new booking" else "Updated booking",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    if (editMode) {
-                        adapter?.setItem(adapterPosition, bookingDetails)
-                    } else {
-                        adapterContainer.getAdapter()?.addItem(bookingDetails)
-                    }
-                    if (!editMode) {
-                        requireActivity().onBackPressed()
-                    }
-                    requireActivity().onBackPressed()
+
                 } catch (ie: IllegalStateException) {
                     Log.e(
                         "NewBookingDetailsFragment:viewModel.createBooking#invokeOnCompletion",
@@ -270,14 +257,48 @@ class NewBookingDetailsFragment(
                 }
             }, 2000)
 
+            val returnIds = mutableListOf<Pair<String, String>>()
             viewLifecycleOwner.lifecycleScope.launch {
                 if (editMode) {
                     viewModel.updateBooking(bookingDetails)
                 } else {
-                    viewModel.createBooking(bookingDetails)
+                    returnIds.addAll(viewModel.createBooking(bookingDetails))
                 }
             }.invokeOnCompletion {
                 loading.visibility = View.GONE
+                val bookingDetailsWithEventIds = BookingDetails(
+                    accommodations = viewModel.accommodationSet,
+                    checkIn = viewModel.checkInDateTime.toInstant(),
+                    checkOut = viewModel.checkOutDateTime.toInstant(),
+                    bookingMainPerson = viewModel.bookingFor,
+                    totalNumberOfPeople = viewModel.numberOfPeople,
+                    bookedBy = if (editMode) originalBookingDetails!!.bookedBy else ApprovedPerson.findByEmail(
+                        Application.getInstance().account.name
+                    ),
+                    advancePaymentInfo = AdvancePayment(
+                        viewModel.advancePaymentRequired,
+                        viewModel.advancePaymentAmount,
+                        viewModel.paymentType
+                    ),
+                    phoneNumber = viewModel.phoneNumber,
+                    bookingIdOnGoogle = viewModel.bookingIdOnGoogle,
+                    eventIds = if (editMode) originalBookingDetails!!.eventIds else ArrayList(returnIds),
+                    notes = viewModel.notes
+                )
+                Toast.makeText(
+                    requireContext(),
+                    if (!editMode) "Added new booking" else "Updated booking",
+                    Toast.LENGTH_SHORT
+                ).show()
+                if (editMode) {
+                    adapter?.setItem(adapterPosition, bookingDetailsWithEventIds)
+                } else {
+                    adapterContainer.getAdapter()?.addItem(bookingDetailsWithEventIds)
+                }
+                if (!editMode) {
+                    requireActivity().onBackPressed()
+                }
+                requireActivity().onBackPressed()
             }
 
         }

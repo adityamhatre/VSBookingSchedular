@@ -57,9 +57,9 @@ class NewBookingDetailsViewModel : ViewModel() {
         return ArrayAdapter(context, R.layout.list_item, paymentTypeItems)
     }
 
-    suspend fun createBooking(bookingDetails: BookingDetails) {
-        withContext(Dispatchers.IO) {
-            bookingsService.createBooking(bookingDetails)
+    suspend fun createBooking(bookingDetails: BookingDetails): MutableList<Pair<String, String>> {
+        return withContext(Dispatchers.IO) {
+            return@withContext bookingsService.createBooking(bookingDetails)
         }
     }
 

@@ -102,10 +102,11 @@ class CalendarService(context: Context, account: Account) {
             .map { (key, _) -> Accommodation.from(key) }
     }
 
-    fun createBooking(bookingDetails: BookingDetails) {
+    fun createBooking(bookingDetails: BookingDetails): MutableList<Pair<String, String>> {
+        val returnIds = mutableListOf<Pair<String,String>>()
         bookingDetails.accommodations.parallelStream().forEach {
             try {
-                calendarClient.events().insert(
+                val executeResult = calendarClient.events().insert(
                     it.calendarId, Event()
                         .setSummary(bookingDetails.bookingMainPerson)
                         .setExtendedProperties(
@@ -119,11 +120,13 @@ class CalendarService(context: Context, account: Account) {
                             EventDateTime().setDateTime(DateTime(Date.from(bookingDetails.checkOut)))
                         )
                 ).execute()
+                returnIds.add(Pair(it.calendarId, executeResult.id))
             } catch (gjre: GoogleJsonResponseException) {
                 Log.e("create booking", gjre.details.message)
                 FirebaseCrashlytics.getInstance().recordException(gjre)
             }
         }
+        return returnIds
 
     }
 
