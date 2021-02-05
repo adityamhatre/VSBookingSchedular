@@ -115,4 +115,17 @@ class HerokuService(context: Context) {
         return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
     }
 
+    fun getBookingSummary(callback: (JSONObject) -> Unit) {
+        val request = StringRequest(Request.Method.GET,
+            "$baseUrl/bookingsSummary",
+            { response ->
+                val validResponse = JSONObject(response)
+                callback(validResponse)
+            },
+            {}
+        )
+
+        queue.add(request)
+    }
+
 }

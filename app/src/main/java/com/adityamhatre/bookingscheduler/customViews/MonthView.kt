@@ -22,6 +22,8 @@ class MonthView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
 
     private val month: Int
     private val year: Int
+    private var count: Int = 0
+    private var titleText = ""
 
     private lateinit var calendar: Calendar
     private val datesLookup = mutableMapOf<Int, Pair<Int, Int>>()
@@ -42,8 +44,8 @@ class MonthView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
                     month = getString(R.styleable.MonthView_month)?.toInt() ?: 1
                     year = getInt(R.styleable.MonthView_year, 1970)
 
-                    val titleText = "${getMonthName()} $year"
-                    view.findViewById<TextView>(R.id.title).text = titleText
+                    titleText = "${getMonthName()} $year"
+
                     fillWeeks()
                 } finally {
                     recycle()
@@ -121,6 +123,20 @@ class MonthView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
     override fun setOnClickListener(listener: OnClickListener?) {
         super.setOnClickListener(listener)
         view.findViewById<CardView>(R.id.month_card).setOnClickListener(listener)
+    }
+
+    fun setBookingsCount(count: Int) {
+        this.count = count
+        addBookingInfo()
+    }
+
+    fun addBookingInfo() {
+        val titleView = view.findViewById<TextView>(R.id.title)
+        val updatedTitle = if (this.count > 0)
+            "$titleText ($count booking${if (count > 1) "s" else ""})"
+        else
+            "$titleText (No Bookings)"
+        titleView.text = updatedTitle
     }
 
     companion object {

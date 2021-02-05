@@ -91,7 +91,25 @@ class MainFragment : Fragment() {
             monthView.dateClickedListener =
                 MonthView.DateClickedListener { date, month -> viewBookings(date, month) }
             monthView.setOnClickListener { viewBookings(month = i + 1) }
+            monthView.addBookingInfo()
         }
+
+        Application.getInstance().getHerokuService()
+            .getBookingSummary { bookingSummaryJsonObject ->
+                bookingSummaryJsonObject.keys().forEach {
+                    val monthYear = it
+                    val month = it.substring(0, 2)
+                    val year = it.substring(3)
+
+                    val count = bookingSummaryJsonObject[it].toString().toInt()
+
+                    val monthView =
+                        view.findViewById<LinearLayout>(R.id.yearList)[month.toInt() - 1] as MonthView
+
+                    monthView.setBookingsCount(count)
+                }
+            }
+
     }
 
     private fun viewBookings(date: Int = -1, month: Int, year: Int = 2021) {
