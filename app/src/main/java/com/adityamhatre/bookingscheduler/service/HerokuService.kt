@@ -125,6 +125,7 @@ class HerokuService(context: Context) {
             {}
         )
 
+        request.setShouldCache(false)
         queue.add(request)
     }
 
