@@ -68,6 +68,33 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupView(view)
+        loadMonthlyBookingsCount(view)
+    }
+
+    private fun loadMonthlyBookingsCount(view: View) {
+        val timer = Timer()
+        val timerTask = object : TimerTask() {
+            override fun run() {
+                Application.getInstance().getHerokuService()
+                    .getBookingSummary { bookingSummaryJsonObject ->
+                        timer.cancel()
+                        bookingSummaryJsonObject.keys().forEach {
+                            val monthYear = it
+                            val month = it.substring(0, 2)
+                            val year = it.substring(3)
+
+                            val count = bookingSummaryJsonObject[it].toString().toInt()
+
+                            val monthView =
+                                view.findViewById<LinearLayout>(R.id.yearList)[month.toInt() - 1] as MonthView
+
+                            monthView.setBookingsCount(count)
+                        }
+                    }
+            }
+        }
+
+        timer.scheduleAtFixedRate(timerTask,0,3000)
     }
 
     private fun setupView(view: View) {
@@ -93,23 +120,6 @@ class MainFragment : Fragment() {
             monthView.setOnClickListener { viewBookings(month = i + 1) }
             monthView.addBookingInfo()
         }
-
-        Application.getInstance().getHerokuService()
-            .getBookingSummary { bookingSummaryJsonObject ->
-                bookingSummaryJsonObject.keys().forEach {
-                    val monthYear = it
-                    val month = it.substring(0, 2)
-                    val year = it.substring(3)
-
-                    val count = bookingSummaryJsonObject[it].toString().toInt()
-
-                    val monthView =
-                        view.findViewById<LinearLayout>(R.id.yearList)[month.toInt() - 1] as MonthView
-
-                    monthView.setBookingsCount(count)
-                }
-            }
-
     }
 
     private fun viewBookings(date: Int = -1, month: Int, year: Int = 2021) {
