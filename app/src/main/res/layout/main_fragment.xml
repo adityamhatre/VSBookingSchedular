@@ -116,6 +116,54 @@
                 android:clickable="true"
                 month_view:month="December"
                 month_view:year="2021" />
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                month_view:month="January"
+                month_view:year="2022" />
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                month_view:month="February"
+                month_view:year="2022" />
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                month_view:month="March"
+                month_view:year="2022" />
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                month_view:month="April"
+                month_view:year="2022" />
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                month_view:month="May"
+                month_view:year="2022" />
+
+
+            <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                month_view:month="June"
+                month_view:year="2022" />
+
+            <!-- TODO: FIND A A WAY TO AUTOMATE THIS-->
         </LinearLayout>
     </ScrollView>
 
