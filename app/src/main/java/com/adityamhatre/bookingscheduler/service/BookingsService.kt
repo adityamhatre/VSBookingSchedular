@@ -27,7 +27,7 @@ class BookingsService {
                 accommodationIt.calendarId,
                 date,
                 month,
-                year = 2021
+                year = Application.year
             )
             filteredBookings.addAll(allBookings.groupBy { it.extendedProperties.private["id"] as String }
                 .map { lv ->
@@ -85,7 +85,7 @@ class BookingsService {
             allBookings = calendarService.getBookingsForMonth(
                 accommodationIt.calendarId,
                 month,
-                year = 2021
+                year = Application.year
             )
             filteredBookings.addAll(allBookings.groupBy { it.extendedProperties.private["id"] as String }
                 .map { lv ->

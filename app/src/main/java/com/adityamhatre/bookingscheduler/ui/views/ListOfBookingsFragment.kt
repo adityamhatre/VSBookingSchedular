@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.adityamhatre.bookingscheduler.Application
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.customViews.MonthView
 import com.adityamhatre.bookingscheduler.dtos.AppDate
@@ -129,7 +130,7 @@ class ListOfBookingsFragment : Fragment() {
                     TimeFrameInputFragment.newInstance(
                         viewModel.bookingsOn.date,
                         viewModel.bookingsOn.month,
-                        year = 2021,
+                        year = Application.year,
                         adapterContainer = viewModel.adapterContainer,
                     )
                 )
@@ -145,7 +146,7 @@ class ListOfBookingsFragment : Fragment() {
                     TimeFrameInputFragment.newInstance(
                         viewModel.bookingsOn.date,
                         viewModel.bookingsOn.month,
-                        year = 2021,
+                        year = Application.year,
                         adapterContainer = viewModel.adapterContainer,
                         oneDayBooking = true
                     )

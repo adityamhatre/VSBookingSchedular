@@ -3,6 +3,7 @@ package com.adityamhatre.bookingscheduler.ui.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.adityamhatre.bookingscheduler.Application
 import com.adityamhatre.bookingscheduler.adapters.BookingListAdapter
 import com.adityamhatre.bookingscheduler.dtos.AdapterContainer
 import com.adityamhatre.bookingscheduler.dtos.AppDate
@@ -27,10 +28,10 @@ class ListOfBookingsViewModel : ViewModel() {
             return bookingDetailsService.getAllBookingsForDate(
                 date = bookingsOn.date,
                 month = bookingsOn.month,
-                year = 2021
+                year = Application.year
             )
         if (bookingsOn.isForMonth())
-            return bookingDetailsService.getAllBookingsForMonth(month = bookingsOn.month)
+            return bookingDetailsService.getAllBookingsForMonth(month = bookingsOn.month, year = Application.year)
         return emptyList<BookingDetails>() as LinkedList<BookingDetails>
     }
 

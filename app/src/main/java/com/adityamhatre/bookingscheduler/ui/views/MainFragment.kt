@@ -20,6 +20,7 @@ import com.adityamhatre.bookingscheduler.BuildConfig
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.customViews.MonthView
 import com.adityamhatre.bookingscheduler.ui.viewmodels.MainFragmentViewModel
+import java.time.ZoneId
 import java.util.*
 
 class MainFragment : Fragment() {
@@ -94,10 +95,15 @@ class MainFragment : Fragment() {
             }
         }
 
-        timer.scheduleAtFixedRate(timerTask,0,3000)
+        timer.scheduleAtFixedRate(timerTask, 0, 3000)
     }
 
     private fun setupView(view: View) {
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone(ZoneId.systemDefault()));
+        val year = calendar.get(Calendar.YEAR);
+        val month = calendar.get(Calendar.MONTH)
+        val scrollToIndex = 12 * (year - 2021) + month
+
         viewModel.wasViewLoaded().observe(viewLifecycleOwner, {
             if (!it) {
                 viewModel.viewDidLoad()
@@ -105,8 +111,7 @@ class MainFragment : Fragment() {
                     view.findViewById<ScrollView>(R.id.scrollLayout)
                         .smoothScrollTo(
                             0,
-                            view.findViewById<LinearLayout>(R.id.yearList)[Calendar.getInstance()
-                                .get(Calendar.MONTH)].top
+                            view.findViewById<LinearLayout>(R.id.yearList)[scrollToIndex].top
                         )
                 }, 500)
             }
@@ -117,7 +122,12 @@ class MainFragment : Fragment() {
             val monthView = it as MonthView
             monthView.dateClickedListener =
                 MonthView.DateClickedListener { date, month -> viewBookings(date, month) }
-            monthView.setOnClickListener { viewBookings(month = i + 1) }
+            monthView.setOnClickListener {
+                viewBookings(
+                    month = (i + 1) - 12 * (year - 2021),
+                    year = calendar.get(Calendar.YEAR)
+                )
+            }
             monthView.addBookingInfo()
         }
     }

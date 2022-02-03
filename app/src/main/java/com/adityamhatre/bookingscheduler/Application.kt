@@ -120,6 +120,7 @@ class Application : Application() {
     fun getHerokuService(): HerokuService = herokuService
 
     companion object {
+        val year: Int = Calendar.getInstance(TimeZone.getDefault()).get(Calendar.YEAR)
         private lateinit var application: com.adityamhatre.bookingscheduler.Application
         fun getApplicationContext(): Context = application.applicationContext
 
