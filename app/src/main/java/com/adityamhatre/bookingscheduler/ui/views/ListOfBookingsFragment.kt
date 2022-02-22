@@ -236,7 +236,7 @@ class ListOfBookingsFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(date: Int = -1, month: Int, year: Int = 2021) =
+        fun newInstance(date: Int = -1, month: Int, year: Int) =
             ListOfBookingsFragment().apply {
                 arguments = Bundle().apply {
                     putInt(DATE, date)

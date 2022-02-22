@@ -14,10 +14,17 @@ import java.util.*
 
 class MonthView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
     fun interface DateClickedListener {
-        fun onDateClicked(date: Int, month: Int)
+        fun onDateClicked(date: Int, month: Int, year: Int)
     }
 
+    fun interface MonthClickedListener {
+        fun onMonthClicked(month: Int, year: Int)
+    }
+
+
     var dateClickedListener: DateClickedListener? = null
+    var monthClickedListener: MonthClickedListener?=null
+
     private val view by lazy { inflate(context, R.layout.month_view, this) }
 
     private val month: Int
@@ -90,7 +97,7 @@ class MonthView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
                     val iDateTextView = it as TextView
                     if (iDateTextView.text.trim().isEmpty()) return@setOnClickListener
 
-                    dateClickedListener?.onDateClicked(iDateTextView.text.toString().toInt(), month)
+                    dateClickedListener?.onDateClicked(iDateTextView.text.toString().toInt(), month, year)
                 }
             }
 
@@ -120,11 +127,6 @@ class MonthView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         }
     }
 
-    override fun setOnClickListener(listener: OnClickListener?) {
-        super.setOnClickListener(listener)
-        view.findViewById<CardView>(R.id.month_card).setOnClickListener(listener)
-    }
-
     fun setBookingsCount(count: Int) {
         this.count = count
         addBookingInfo()
@@ -139,6 +141,12 @@ class MonthView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         titleView.text = updatedTitle
     }
 
+    override fun setOnClickListener(l: OnClickListener?) {
+        super.setOnClickListener(l)
+        view.findViewById<CardView>(R.id.month_card).setOnClickListener{
+            monthClickedListener?.onMonthClicked(month, year)
+        }
+    }
     companion object {
         fun maxDaysInThisMonth(month: Int, year: Int): Int {
             val leap = if (year % 4 == 0) {

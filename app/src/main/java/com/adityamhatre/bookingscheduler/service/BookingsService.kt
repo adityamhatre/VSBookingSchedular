@@ -77,7 +77,7 @@ class BookingsService {
         return json
     }
 
-    fun getAllBookingsForMonth(month: Int, year: Int = 2021): MutableList<BookingDetails> {
+    fun getAllBookingsForMonth(month: Int, year: Int): MutableList<BookingDetails> {
         var allBookings: Sequence<Event>
         val filteredBookings = mutableSetOf<BookingDetails>()
         val map = mutableMapOf<String, HashSet<Pair<String, String>>>()

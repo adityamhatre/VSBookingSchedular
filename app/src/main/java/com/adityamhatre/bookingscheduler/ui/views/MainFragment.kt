@@ -121,18 +121,32 @@ class MainFragment : Fragment() {
         view.findViewById<LinearLayout>(R.id.yearList).children.forEachIndexed { i, it ->
             val monthView = it as MonthView
             monthView.dateClickedListener =
-                MonthView.DateClickedListener { date, month -> viewBookings(date, month) }
-            monthView.setOnClickListener {
-                viewBookings(
-                    month = (i + 1) - 12 * (year - 2021),
-                    year = calendar.get(Calendar.YEAR)
-                )
-            }
+                MonthView.DateClickedListener { date, month, year ->
+                    viewBookings(
+                        date,
+                        month,
+                        year
+                    )
+                }
+
+            monthView.monthClickedListener =
+                MonthView.MonthClickedListener { month, year ->
+                    viewBookings(
+                        month = month,
+                        year = year
+                    )
+                }
+            monthView.setOnClickListener(object: View.OnClickListener{
+                override fun onClick(v: View?) {
+
+                }
+
+            })
             monthView.addBookingInfo()
         }
     }
 
-    private fun viewBookings(date: Int = -1, month: Int, year: Int = 2021) {
+    private fun viewBookings(date: Int = -1, month: Int, year: Int) {
         if (activity == null) return
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.container, ListOfBookingsFragment.newInstance(date, month, year))
