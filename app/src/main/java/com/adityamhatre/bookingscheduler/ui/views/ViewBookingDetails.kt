@@ -10,6 +10,7 @@ import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
@@ -29,6 +30,9 @@ import java.time.ZoneId
 import java.util.*
 
 
+
+
+
 class ViewBookingDetails(private val bookingDetails: BookingDetails) : Fragment() {
     companion object {
         fun newInstance(bookingDetails: BookingDetails) = ViewBookingDetails(bookingDetails)
@@ -38,7 +42,10 @@ class ViewBookingDetails(private val bookingDetails: BookingDetails) : Fragment(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.booking_details_card, container, false)
+        val scrollView = ScrollView(inflater.context)
+        scrollView.addView(inflater.inflate(R.layout.booking_details_card, container, false))
+
+        return scrollView
     }
 
 
@@ -84,7 +91,7 @@ class ViewBookingDetails(private val bookingDetails: BookingDetails) : Fragment(
         (itemView.findViewById<TextView>(R.id.accommodations)).text = accommodations
 
         (itemView.findViewById<TextView>(R.id.advance_payment_info)).text =
-            bookingDetails.advancePaymentInfo.toSpannableString(receiptMode=true)
+            bookingDetails.advancePaymentInfo.toSpannableString(receiptMode = true)
 
         val notesView = (itemView.findViewById<TextView>(R.id.notes))
         if (bookingDetails.notes.isNotEmpty()) {
@@ -109,7 +116,11 @@ class ViewBookingDetails(private val bookingDetails: BookingDetails) : Fragment(
         (itemView.findViewById<TextView>(R.id.share_button)).visibility = View.VISIBLE
         (itemView.findViewById<TextView>(R.id.share_button)).setOnClickListener {
             (itemView.findViewById<TextView>(R.id.share_button)).visibility = View.GONE
-            val bitmap = viewToImage(itemView)
+
+
+            val totalHeight: Int = (itemView as ScrollView).getChildAt(0).height
+            val totalWidth: Int = itemView.getChildAt(0).width
+            val bitmap = getBitmapFromView(itemView, totalHeight, totalWidth) //viewToImage(itemView)
             (itemView.findViewById<TextView>(R.id.share_button)).visibility = View.VISIBLE
             shareBitmap(bitmap)
         }
@@ -164,6 +175,23 @@ class ViewBookingDetails(private val bookingDetails: BookingDetails) : Fragment(
         if (bgDrawable != null) bgDrawable.draw(canvas) else canvas.drawColor(Color.WHITE)
         view.draw(canvas)
         return returnedBitmap
+    }
+
+    fun getBitmapFromView(view: View, totalHeight: Int, totalWidth: Int): Bitmap {
+        val height = totalHeight.coerceAtMost(totalHeight)
+        val percent = height / totalHeight.toFloat()
+        val canvasBitmap = Bitmap.createBitmap(
+            (totalWidth * percent).toInt(),
+            (totalHeight * percent).toInt(), Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(canvasBitmap)
+        val bgDrawable = view.background
+        if (bgDrawable != null) bgDrawable.draw(canvas) else canvas.drawColor(Color.WHITE)
+        canvas.save()
+        canvas.scale(percent, percent)
+        view.draw(canvas)
+        canvas.restore()
+        return canvasBitmap
     }
 }
 
