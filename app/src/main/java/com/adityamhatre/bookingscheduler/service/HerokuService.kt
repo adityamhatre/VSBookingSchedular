@@ -13,6 +13,7 @@ import androidx.core.content.FileProvider
 import com.adityamhatre.bookingscheduler.Application
 import com.adityamhatre.bookingscheduler.BuildConfig
 import com.adityamhatre.bookingscheduler.dtos.BookingDetails
+import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
@@ -126,6 +127,7 @@ class HerokuService(context: Context) {
         )
 
         request.setShouldCache(false)
+        request.retryPolicy = DefaultRetryPolicy(10000, 3, 2f)
         queue.add(request)
     }
 

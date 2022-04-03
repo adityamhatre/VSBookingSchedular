@@ -20,7 +20,9 @@ import com.adityamhatre.bookingscheduler.BuildConfig
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.customViews.MonthView
 import com.adityamhatre.bookingscheduler.ui.viewmodels.MainFragmentViewModel
+import java.time.YearMonth
 import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 class MainFragment : Fragment() {
@@ -72,6 +74,45 @@ class MainFragment : Fragment() {
         loadMonthlyBookingsCount(view)
     }
 
+    private fun addExtraMonths(monthsList: LinearLayout) {
+        val (lastMonth, lastYear) = (monthsList[monthsList.childCount - 1] as MonthView).getMonthYear()
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone(ZoneId.systemDefault()));
+        val currentMonth = calendar.get(Calendar.MONTH)
+        val currentYear = calendar.get(Calendar.YEAR)
+
+        val diff =
+            ChronoUnit.MONTHS.between(
+                YearMonth.of(currentYear, currentMonth),
+                YearMonth.of(lastYear, lastMonth)
+            ).toInt()
+
+        if (diff >= 3) {
+            var newMonth = lastMonth
+            var newYear = lastYear
+            for (i in 0..8) {
+                newMonth += 1
+                if (newMonth > 12) {
+                    newMonth = 1
+                    newYear += 1
+                }
+//                printMonths(newMonth, newYear)
+            }
+        }
+    }
+
+    private fun printMonths(newMonth: Int, newYear: Int) {
+        val xml = """
+             <com.adityamhatre.bookingscheduler.customViews.MonthView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                month_view:month="${MonthView.monthName(newMonth)}"
+                month_view:year="$newYear" />
+        """.trimIndent()
+        println(xml)
+    }
+
+
     private fun loadMonthlyBookingsCount(view: View) {
         val timer = Timer()
         val timerTask = object : TimerTask() {
@@ -81,13 +122,13 @@ class MainFragment : Fragment() {
                         timer.cancel()
                         bookingSummaryJsonObject.keys().forEach {
                             val monthYear = it
-                            val month = it.substring(0, 2)
-                            val year = it.substring(3)
-
+                            val month = it.substring(0, 2).toInt()
+                            val year = it.substring(2).toInt()
                             val count = bookingSummaryJsonObject[it].toString().toInt()
 
+                            val index = 12 * (year - 2021) + month - 1
                             val monthView =
-                                view.findViewById<LinearLayout>(R.id.yearList)[month.toInt() - 1] as MonthView
+                                view.findViewById<LinearLayout>(R.id.yearList)[index] as MonthView
 
                             monthView.setBookingsCount(count)
                         }
@@ -117,6 +158,7 @@ class MainFragment : Fragment() {
             }
         })
 
+        addExtraMonths(view.findViewById<LinearLayout>(R.id.yearList))
 
         view.findViewById<LinearLayout>(R.id.yearList).children.forEachIndexed { i, it ->
             val monthView = it as MonthView
@@ -136,12 +178,7 @@ class MainFragment : Fragment() {
                         year = year
                     )
                 }
-            monthView.setOnClickListener(object: View.OnClickListener{
-                override fun onClick(v: View?) {
-
-                }
-
-            })
+            monthView.setOnClickListener { }
             monthView.addBookingInfo()
         }
     }

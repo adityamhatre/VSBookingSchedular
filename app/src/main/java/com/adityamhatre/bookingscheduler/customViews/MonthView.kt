@@ -23,7 +23,7 @@ class MonthView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
 
 
     var dateClickedListener: DateClickedListener? = null
-    var monthClickedListener: MonthClickedListener?=null
+    var monthClickedListener: MonthClickedListener? = null
 
     private val view by lazy { inflate(context, R.layout.month_view, this) }
 
@@ -97,7 +97,11 @@ class MonthView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
                     val iDateTextView = it as TextView
                     if (iDateTextView.text.trim().isEmpty()) return@setOnClickListener
 
-                    dateClickedListener?.onDateClicked(iDateTextView.text.toString().toInt(), month, year)
+                    dateClickedListener?.onDateClicked(
+                        iDateTextView.text.toString().toInt(),
+                        month,
+                        year
+                    )
                 }
             }
 
@@ -141,12 +145,15 @@ class MonthView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         titleView.text = updatedTitle
     }
 
+    fun getMonthYear(): Pair<Int, Int> = Pair(month, year)
+
     override fun setOnClickListener(l: OnClickListener?) {
         super.setOnClickListener(l)
-        view.findViewById<CardView>(R.id.month_card).setOnClickListener{
+        view.findViewById<CardView>(R.id.month_card).setOnClickListener {
             monthClickedListener?.onMonthClicked(month, year)
         }
     }
+
     companion object {
         fun maxDaysInThisMonth(month: Int, year: Int): Int {
             val leap = if (year % 4 == 0) {
