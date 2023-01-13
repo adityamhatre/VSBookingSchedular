@@ -48,13 +48,13 @@ class GoogleSignInFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (GoogleSignIn.getLastSignedInAccount(activity) == null) {
+        if (GoogleSignIn.getLastSignedInAccount(requireContext()) == null) {
             view.findViewById<SignInButton>(R.id.sign_in_button).setOnClickListener {
                 startActivityForResult(googleSignInClient.signInIntent, SIGN_IN_INTENT_RC)
             }
         } else {
             view.findViewById<SignInButton>(R.id.sign_in_button).visibility = View.GONE
-            onSuccessLogin(GoogleSignIn.getLastSignedInAccount(activity))
+            onSuccessLogin(GoogleSignIn.getLastSignedInAccount(requireContext()))
         }
 
     }

@@ -77,7 +77,7 @@ class MainFragment : Fragment() {
     private fun addExtraMonths(monthsList: LinearLayout) {
         val (lastMonth, lastYear) = (monthsList[monthsList.childCount - 1] as MonthView).getMonthYear()
         val calendar = Calendar.getInstance(TimeZone.getTimeZone(ZoneId.systemDefault()));
-        val currentMonth = calendar.get(Calendar.MONTH)
+        val currentMonth = calendar.get(Calendar.MONTH) + 1
         val currentYear = calendar.get(Calendar.YEAR)
 
         val diff =
@@ -117,7 +117,7 @@ class MainFragment : Fragment() {
         val timer = Timer()
         val timerTask = object : TimerTask() {
             override fun run() {
-                Application.getInstance().getHerokuService()
+                Application.getInstance().getRenderService()
                     .getBookingSummary { bookingSummaryJsonObject ->
                         timer.cancel()
                         bookingSummaryJsonObject.keys().forEach {

@@ -10,7 +10,7 @@ import android.util.Log
 import com.adityamhatre.bookingscheduler.converters.BookingDetailsDeserializer
 import com.adityamhatre.bookingscheduler.converters.InstantTypeConverter
 import com.adityamhatre.bookingscheduler.dtos.BookingDetails
-import com.adityamhatre.bookingscheduler.service.HerokuService
+import com.adityamhatre.bookingscheduler.service.RenderService
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
@@ -27,7 +27,7 @@ class Application : Application() {
         .registerTypeAdapter(BookingDetails::class.java, BookingDetailsDeserializer())
         .create()
     lateinit var firebaseToken: String
-    private val herokuService by lazy { HerokuService(this.applicationContext) }
+    private val renderService by lazy { RenderService(this.applicationContext) }
     val topics = listOf("new-booking-topic", "updated-booking-topic", "tomorrow-booking-topic")
 
     private fun createNotificationChannel() {
@@ -113,11 +113,11 @@ class Application : Application() {
     }
 
     fun checkForUpdates() {
-        herokuService.checkForUpdates()
+        renderService.checkForUpdates()
     }
 
-    @JvmName("getHerokuServiceJvm")
-    fun getHerokuService(): HerokuService = herokuService
+    @JvmName("getRenderServiceJvm")
+    fun getRenderService(): RenderService = renderService
 
     companion object {
         val year: Int = Calendar.getInstance(TimeZone.getDefault()).get(Calendar.YEAR)

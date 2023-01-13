@@ -16,7 +16,7 @@ class BookingsService {
     private val account = Application.getInstance().account
     private val calendarService =
         CalendarService(Application.getApplicationContext(), account)
-    private val herokuService = Application.getInstance().getHerokuService()
+    private val renderService = Application.getInstance().getRenderService()
 
     fun getAllBookingsForDate(date: Int, month: Int, year: Int): MutableList<BookingDetails> {
         var allBookings: Sequence<Event>
@@ -140,17 +140,17 @@ class BookingsService {
 
     fun createBooking(bookingDetails: BookingDetails): MutableList<Pair<String, String>> {
         val returnIds = calendarService.createBooking(bookingDetails)
-        herokuService.notifyNewBooking(bookingDetails)
+        renderService.notifyNewBooking(bookingDetails)
         return returnIds
     }
 
     fun removeBooking(bookingDetails: BookingDetails) {
         calendarService.removeBooking(bookingDetails)
-        herokuService.removeBooking(bookingDetails)
+        renderService.removeBooking(bookingDetails)
     }
 
     fun updateBooking(bookingDetails: BookingDetails) {
         calendarService.updateBooking(bookingDetails)
-        herokuService.notifyUpdateBooking(bookingDetails)
+        renderService.notifyUpdateBooking(bookingDetails)
     }
 }

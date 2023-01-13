@@ -22,9 +22,9 @@ import org.json.JSONObject
 import java.io.File
 
 
-class HerokuService(context: Context) {
+class RenderService(context: Context) {
     private val queue = Volley.newRequestQueue(context)
-    private val baseUrl = "https://vs-booking-scheduler-push-serv.herokuapp.com"
+    private val baseUrl = "https://vs-booking-scheduler-push-notify-server.onrender.com"
 
     fun notifyNewBooking(bookingDetails: BookingDetails) {
         val request = JsonObjectRequest(
@@ -106,7 +106,7 @@ class HerokuService(context: Context) {
 
                 startActivity(Application.getApplicationContext(), intent, null)
             },
-            { Log.e("HerokuService.downloadAndInstall", it?.message.toString()) }
+            { Log.e("RenderService.downloadAndInstall", it?.message.toString()) }
         )
 
         queue.add(request)
