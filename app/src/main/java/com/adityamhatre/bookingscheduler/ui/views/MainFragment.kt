@@ -74,29 +74,18 @@ class MainFragment : Fragment() {
         loadMonthlyBookingsCount(view)
     }
 
+    // adds 1 year from current year
     private fun addExtraMonths(monthsList: LinearLayout) {
         val (lastMonth, lastYear) = (monthsList[monthsList.childCount - 1] as MonthView).getMonthYear()
-        val calendar = Calendar.getInstance(TimeZone.getTimeZone(ZoneId.systemDefault()));
-        val currentMonth = calendar.get(Calendar.MONTH) + 1
-        val currentYear = calendar.get(Calendar.YEAR)
-
-        val diff =
-            ChronoUnit.MONTHS.between(
-                YearMonth.of(currentYear, currentMonth),
-                YearMonth.of(lastYear, lastMonth)
-            ).toInt()
-
-        if (diff >= 3) {
-            var newMonth = lastMonth
-            var newYear = lastYear
-            for (i in 0..8) {
-                newMonth += 1
-                if (newMonth > 12) {
-                    newMonth = 1
-                    newYear += 1
-                }
-//                printMonths(newMonth, newYear)
+        var newMonth = lastMonth
+        var newYear = lastYear
+        for (i in 0..11) {
+            newMonth += 1
+            if (newMonth > 12) {
+                newMonth = 1
+                newYear += 1
             }
+            printMonths(newMonth, newYear)
         }
     }
 
