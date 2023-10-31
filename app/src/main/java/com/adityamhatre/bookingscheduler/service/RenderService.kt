@@ -94,14 +94,13 @@ class RenderService(context: Context) {
             {
                 externalCacheFile.writeBytes(it)
 
-
-                val urlapk: Uri = FileProvider.getUriForFile(
+                val urlApk: Uri = FileProvider.getUriForFile(
                     Application.getApplicationContext(),
                     BuildConfig.APPLICATION_ID + ".provider",
                     externalCacheFile
                 )
                 val intent = Intent(Intent.ACTION_VIEW)
-                intent.setDataAndType(urlapk, "application/vnd.android.package-archive")
+                intent.setDataAndType(urlApk, "application/vnd.android.package-archive")
                 intent.flags = FLAG_GRANT_READ_URI_PERMISSION or FLAG_ACTIVITY_NEW_TASK
 
                 startActivity(Application.getApplicationContext(), intent, null)
