@@ -10,6 +10,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.adityamhatre.bookingscheduler.Application
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.adapters.BookingListAdapter
 import com.adityamhatre.bookingscheduler.dtos.AdapterContainer
@@ -21,6 +22,9 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
+
+
+
 
 private const val DATE = "date"
 private const val MONTH = "month"
@@ -257,6 +261,12 @@ class TimeFrameInputFragment(private val adapterContainer: AdapterContainer<Book
                     accommodationListLayout2.addView(checkBox)
                 }
             }
+            Toast.makeText(
+                Application.getInstance().applicationContext,
+                "Scroll to see more accommodations",
+                Toast.LENGTH_SHORT
+            ).show()
+
             if (viewModel.isOneDayBooking) {
                 viewModel.addAccommodation(Accommodation.ONE_DAY)
             }

@@ -56,7 +56,7 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
                 )
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(PendingIntent.getActivity(this, 0, Intent(), 0));
+                .setContentIntent(PendingIntent.getActivity(this, 0, Intent(), PendingIntent.FLAG_IMMUTABLE));
 
         var init = true
         when (topic) {

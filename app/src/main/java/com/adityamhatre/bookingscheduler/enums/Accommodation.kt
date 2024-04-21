@@ -62,8 +62,38 @@ enum class Accommodation(val readableName: String, val calendarId: String) {
         "Lawn near new ashtakon area",
         Application.getApplicationContext().getString(R.string.new_ashtakon_lawn)
     ),
-    ONE_DAY("One Day",
+    ONE_DAY(
+        "One Day",
         Application.getApplicationContext().getString(R.string.one_day)
+    ),
+    PREMIUM_ROOM_SAANJ(
+        "Premium Room Saanj",
+        Application.getApplicationContext().getString(R.string.premium_room_saanj)
+
+    ),
+    PREMIUM_ROOM_SUGANDH(
+        "Premium Room Sugandh",
+        Application.getApplicationContext().getString(R.string.premium_room_sugandh)
+    ),
+    PREMIUM_ROOM_SUKHAD(
+        "Premium Room Sukhad",
+        Application.getApplicationContext().getString(R.string.premium_room_sukhad)
+    ),
+    PREMIUM_ROOM_SUMAN(
+        "Premium Room Suman",
+        Application.getApplicationContext().getString(R.string.premium_room_suman)
+    ),
+    PREMIUM_ROOM_SUREKH(
+        "Premium Room Surekh",
+        Application.getApplicationContext().getString(R.string.premium_room_surekh)
+    ),
+    LAWN_INFRONT_OF_PREMIUM_ROOMS(
+        "Lawn in front of premium rooms",
+        Application.getApplicationContext().getString(R.string.lawn_premium_room)
+    ),
+    SHREE_SWAMI_SAMARTH_BANQUET_HALL(
+        "Shree Swami Samarth Banquet Hall",
+        Application.getApplicationContext().getString(R.string.swami_samarth_hall)
     );
 
     companion object {

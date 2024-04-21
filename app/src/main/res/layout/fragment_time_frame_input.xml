@@ -170,6 +170,7 @@
 
 
         <ScrollView
+            android:id="@+id/left_scroll_view"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/bungalow5_1"
@@ -187,6 +188,7 @@
         </ScrollView>
 
         <ScrollView
+            android:id="@+id/right_scroll_view"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/bungalow5_1"
