@@ -15,6 +15,7 @@ import com.adityamhatre.bookingscheduler.BuildConfig
 import com.adityamhatre.bookingscheduler.dtos.BookingDetails
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
+import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -35,7 +36,7 @@ class RenderService(context: Context) {
             {}
         )
 
-        queue.add(request)
+        queue.addWithRetry(request)
     }
 
     fun notifyUpdateBooking(bookingDetails: BookingDetails) {
@@ -47,7 +48,7 @@ class RenderService(context: Context) {
             {}
         )
 
-        queue.add(request)
+        queue.addWithRetry(request)
     }
 
     fun removeBooking(bookingDetails: BookingDetails) {
@@ -59,7 +60,7 @@ class RenderService(context: Context) {
             {}
         )
 
-        queue.add(request)
+        queue.addWithRetry(request)
     }
 
     fun checkForUpdates() {
@@ -79,8 +80,7 @@ class RenderService(context: Context) {
             },
             {}
         )
-
-        queue.add(request)
+        queue.addWithRetry(request)
     }
 
     private fun downloadAndInstall(downloadLink: String) {
@@ -126,8 +126,14 @@ class RenderService(context: Context) {
         )
 
         request.setShouldCache(false)
-        request.retryPolicy = DefaultRetryPolicy(10000, 3, 2f)
-        queue.add(request)
+        queue.addWithRetry(request)
     }
 
+}
+
+private fun <T> RequestQueue.addWithRetry(request: Request<T>) {
+    request.retryPolicy = DefaultRetryPolicy(2 * 60 * 1000, 3, 2f)
+    this.add(request)
+    val log = if (request.method == 0) "GET" else if (request.method == 1) "POST" else "UNKNOWN"
+    println("Adding request: $log ${request.url} to queue")
 }

@@ -20,9 +20,7 @@ import com.adityamhatre.bookingscheduler.BuildConfig
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.customViews.MonthView
 import com.adityamhatre.bookingscheduler.ui.viewmodels.MainFragmentViewModel
-import java.time.YearMonth
 import java.time.ZoneId
-import java.time.temporal.ChronoUnit
 import java.util.*
 
 class MainFragment : Fragment() {
@@ -55,9 +53,9 @@ class MainFragment : Fragment() {
 
             val alert = builder.create()
             alert.show()
-        } else {
-            Application.getInstance().checkForUpdates()
+            return
         }
+        Application.getInstance().checkForUpdates()
     }
 
     override fun onCreateView(
