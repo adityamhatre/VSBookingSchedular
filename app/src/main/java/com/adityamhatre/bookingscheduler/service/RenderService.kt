@@ -108,7 +108,7 @@ class RenderService(context: Context) {
             { Log.e("RenderService.downloadAndInstall", it?.message.toString()) }
         )
 
-        queue.add(request)
+        queue.addWithRetry(request)
     }
 
     private fun isExternalStorageWritable(): Boolean {
