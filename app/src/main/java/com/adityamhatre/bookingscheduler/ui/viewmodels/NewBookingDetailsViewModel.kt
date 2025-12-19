@@ -13,7 +13,8 @@ import com.adityamhatre.bookingscheduler.enums.Accommodation
 import com.adityamhatre.bookingscheduler.service.BookingsService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.Locale
+import java.util.UUID
 
 class NewBookingDetailsViewModel : ViewModel() {
     private val bookingsService = BookingsService()
@@ -85,7 +86,7 @@ class NewBookingDetailsViewModel : ViewModel() {
 }
 
 private fun String.toTitleCase(): String {
-    val converted = this[0].toUpperCase() + this.substring(1).toLowerCase(Locale.getDefault())
+    val converted = this[0].uppercaseChar() + this.substring(1).lowercase(Locale.getDefault())
     return converted.split("_")
         .takeIf { it.size > 1 }?.joinToString(" ") { it.toTitleCase() }
         ?: converted

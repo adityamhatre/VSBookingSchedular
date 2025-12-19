@@ -12,9 +12,9 @@ import com.adityamhatre.bookingscheduler.converters.InstantTypeConverter
 import com.adityamhatre.bookingscheduler.dtos.BookingDetails
 import com.adityamhatre.bookingscheduler.service.RenderService
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.messaging.ktx.messaging
+import com.google.firebase.messaging.messaging
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import java.time.Instant

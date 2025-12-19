@@ -12,7 +12,8 @@ import com.adityamhatre.bookingscheduler.dtos.BookingDetails
 import com.adityamhatre.bookingscheduler.enums.Accommodation
 import java.time.Instant
 import java.time.ZoneId
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class BookingListAdapter(
     private val bookingDetailsList: MutableList<BookingDetails>,
@@ -149,5 +150,5 @@ private fun Instant.toHumanDate(): String {
 }
 
 private fun String.toTitleCase(): String {
-    return this[0].toUpperCase() + this.substring(1).toLowerCase(Locale.getDefault())
+    return this[0].uppercaseChar() + this.substring(1).lowercase(Locale.getDefault())
 }

@@ -21,7 +21,10 @@ import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.customViews.MonthView
 import com.adityamhatre.bookingscheduler.ui.viewmodels.MainFragmentViewModel
 import java.time.ZoneId
-import java.util.*
+import java.util.Calendar
+import java.util.TimeZone
+import java.util.Timer
+import java.util.TimerTask
 
 class MainFragment : Fragment() {
 
@@ -83,7 +86,7 @@ class MainFragment : Fragment() {
                 newMonth = 1
                 newYear += 1
             }
-            printMonths(newMonth, newYear)
+//            printMonths(newMonth, newYear)
         }
     }
 

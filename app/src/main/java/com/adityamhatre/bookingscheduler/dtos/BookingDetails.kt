@@ -6,7 +6,7 @@ import com.adityamhatre.bookingscheduler.enums.Accommodation
 import org.json.JSONObject
 import java.io.Serializable
 import java.time.Instant
-import java.util.*
+import java.util.Locale
 
 data class BookingDetails(
     val accommodations: Set<Accommodation>,
@@ -44,8 +44,8 @@ enum class PaymentType : Serializable {
 
     companion object {
         fun fromTitleCase(title: String): PaymentType {
-            return values().first {
-                it.name == (title.replace(" ", "_").toUpperCase(Locale.getDefault()))
+            return entries.first {
+                it.name == (title.replace(" ", "_").uppercase(Locale.getDefault()))
             }
         }
     }
@@ -70,7 +70,7 @@ data class AdvancePayment(
 
 
 private fun String.toTitleCase(): String {
-    val converted = this[0].toUpperCase() + this.substring(1).toLowerCase(Locale.getDefault())
+    val converted = this[0].uppercaseChar() + this.substring(1).lowercase(Locale.getDefault())
     return converted.split("_")
         .takeIf { it.size > 1 }?.joinToString(" ") { it.toTitleCase() }
         ?: converted

@@ -3,7 +3,8 @@ package com.adityamhatre.bookingscheduler.utils
 import com.adityamhatre.bookingscheduler.dtos.AppDateTime
 import java.time.Instant
 import java.time.ZoneId
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class TwoDigitFormatter {
     companion object {
@@ -15,7 +16,7 @@ class Utils {
     companion object {
 
         fun toTitleCase(str: String): String {
-            val converted = str[0].toUpperCase() + str.substring(1).toLowerCase(Locale.US)
+            val converted = str[0].uppercaseChar() + str.substring(1).lowercase(Locale.US)
             return converted.split("_")
                 .takeIf { it.size > 1 }?.joinToString(" ") { toTitleCase(it) }
                 ?: converted

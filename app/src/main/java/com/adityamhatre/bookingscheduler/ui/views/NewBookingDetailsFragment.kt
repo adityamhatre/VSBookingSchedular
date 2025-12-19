@@ -6,8 +6,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.core.content.ContextCompat
+import android.widget.ProgressBar
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.widget.AppCompatButton
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -16,19 +20,21 @@ import com.adityamhatre.bookingscheduler.Application
 import com.adityamhatre.bookingscheduler.MainActivity
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.adapters.BookingListAdapter
-import com.adityamhatre.bookingscheduler.dtos.*
+import com.adityamhatre.bookingscheduler.dtos.AdapterContainer
+import com.adityamhatre.bookingscheduler.dtos.AdvancePayment
+import com.adityamhatre.bookingscheduler.dtos.AppDateTime
+import com.adityamhatre.bookingscheduler.dtos.ApprovedPerson
+import com.adityamhatre.bookingscheduler.dtos.BookingDetails
+import com.adityamhatre.bookingscheduler.dtos.PaymentType
 import com.adityamhatre.bookingscheduler.enums.Accommodation
 import com.adityamhatre.bookingscheduler.ui.viewmodels.NewBookingDetailsViewModel
 import com.adityamhatre.bookingscheduler.utils.Utils
-import com.ebanx.swipebtn.SwipeButton
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 class NewBookingDetailsFragment(
@@ -178,21 +184,21 @@ class NewBookingDetailsFragment(
             viewModel.validate()
         }
 
-        val bookButton = view.findViewById<SwipeButton>(R.id.book_button)
-        bookButton.setText(if (editMode) "Swipe to update" else "Swipe to book")
+        val bookButton = view.findViewById<AppCompatButton>(R.id.book_button)
+        bookButton.text = if (editMode) "Update" else "Book"
         viewModel.isValid().observe(viewLifecycleOwner) {
             bookButton.isEnabled = it
-            bookButton.setDisabledDrawable(
-                ContextCompat.getDrawable(
-                    requireContext(),
-                    if (it) R.drawable.book_arrow else R.drawable.invalid
-                )
-            )
+//            bookButton.setDisabledDrawable(
+//                ContextCompat.getDrawable(
+//                    requireContext(),
+//                    if (it) R.drawable.book_arrow else R.drawable.invalid
+//                )
+//            )
         }
-        bookButton.setOnActiveListener {
+        bookButton.setOnClickListener {
             if (!viewModel.isValid().value!!) {
                 Toast.makeText(requireContext(), "Enter all data", Toast.LENGTH_SHORT).show()
-                return@setOnActiveListener
+                return@setOnClickListener
             }
 
             (requireActivity() as MainActivity).hideKeyboard()
@@ -223,7 +229,7 @@ class NewBookingDetailsFragment(
             }
 
             if (error) {
-                return@setOnActiveListener
+                return@setOnClickListener
             }
 
             val bookingDetails = BookingDetails(
