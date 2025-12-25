@@ -7,15 +7,22 @@ import com.adityamhatre.bookingscheduler.adapters.BookingListAdapter
 import com.adityamhatre.bookingscheduler.dtos.AdapterContainer
 import com.adityamhatre.bookingscheduler.dtos.AppDate
 import com.adityamhatre.bookingscheduler.dtos.BookingDetails
+import com.adityamhatre.bookingscheduler.exceptions.NeedsConsentException
 import com.adityamhatre.bookingscheduler.service.BookingsService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.*
 
 class ListOfBookingsViewModel : ViewModel() {
     private val bookingDetailsService = BookingsService()
     private val bookingsCount: MutableLiveData<Int> = MutableLiveData(-1)
-    private var bookingsList: MutableList<BookingDetails>? = null
+    var bookingsList: MutableList<BookingDetails>? = null
+
+    private val needsConsentIntent = MutableLiveData<android.content.Intent>()
+    fun getNeedsConsentIntent(): LiveData<android.content.Intent> = needsConsentIntent
+
+    private val error = MutableLiveData<Throwable>()
+    fun getError(): LiveData<Throwable> = error
+
     var adapterContainer: AdapterContainer<BookingListAdapter> = AdapterContainer()
 
     fun getBookingsCount(): LiveData<Int> = bookingsCount
@@ -23,15 +30,24 @@ class ListOfBookingsViewModel : ViewModel() {
     var bookingsOn = AppDate(-1, -1, -1)
 
     private fun getBookings(): MutableList<BookingDetails> {
-        if (bookingsOn.isForDate())
-            return bookingDetailsService.getAllBookingsForDate(
-                date = bookingsOn.date,
-                month = bookingsOn.month,
-                year = bookingsOn.year
-            )
-        if (bookingsOn.isForMonth())
-            return bookingDetailsService.getAllBookingsForMonth(month = bookingsOn.month, year = bookingsOn.year)
-        return emptyList<BookingDetails>() as LinkedList<BookingDetails>
+        return try {
+            if (bookingsOn.isForDate())
+                bookingDetailsService.getAllBookingsForDate(
+                    date = bookingsOn.date,
+                    month = bookingsOn.month,
+                    year = bookingsOn.year
+                )
+            else if (bookingsOn.isForMonth())
+                bookingDetailsService.getAllBookingsForMonth(
+                    month = bookingsOn.month,
+                    year = bookingsOn.year
+                )
+            else
+                mutableListOf()
+        } catch (e: NeedsConsentException) {
+            needsConsentIntent.postValue(e.intent)
+            mutableListOf()
+        }
     }
 
     suspend fun getBookingListAdapter(

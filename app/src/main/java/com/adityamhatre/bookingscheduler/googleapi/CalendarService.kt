@@ -7,20 +7,26 @@ import com.adityamhatre.bookingscheduler.Application
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.dtos.AppDateTime
 import com.adityamhatre.bookingscheduler.dtos.BookingDetails
+import com.adityamhatre.bookingscheduler.dtos.GCalResult
 import com.adityamhatre.bookingscheduler.enums.Accommodation
 import com.adityamhatre.bookingscheduler.utils.TimeStampConverter
 import com.google.api.client.extensions.android.http.AndroidHttp.newCompatibleTransport
 import com.google.api.client.extensions.android.json.AndroidJsonFactory
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.CalendarScopes
-import com.google.api.services.calendar.model.*
+import com.google.api.services.calendar.model.Event
+import com.google.api.services.calendar.model.EventDateTime
+import com.google.api.services.calendar.model.Events
+import com.google.api.services.calendar.model.FreeBusyRequest
+import com.google.api.services.calendar.model.FreeBusyRequestItem
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import java.util.*
+import java.util.Date
 
 
 class CalendarService(context: Context, account: Account) {
@@ -46,32 +52,38 @@ class CalendarService(context: Context, account: Account) {
         date: Int,
         month: Int,
         year: Int
-    ): Sequence<Event> {
+    ): Sequence<GCalResult<Event>> {
         return sequence {
             var pageToken: String? = null
-            do {
-                val events: Events =
-                    calendarClient.events()
-                        .list(calendarId)
-                        .setTimeMin(
-                            DateTime(
-                                Date.from(
-                                    LocalDateTime.of(year, month, date, 9, 30).toInstant(
-                                        ZoneOffset.ofHoursMinutes(5, 30)
+            try {
+                do {
+                    val events: Events =
+                        calendarClient.events()
+                            .list(calendarId)
+                            .setTimeMin(
+                                DateTime(
+                                    Date.from(
+                                        LocalDateTime.of(year, month, date, 9, 30).toInstant(
+                                            ZoneOffset.ofHoursMinutes(5, 30)
+                                        )
                                     )
                                 )
                             )
-                        )
-                        .setTimeZone("UTC+05:30")
-                        .setPageToken(pageToken)
-                        .execute()
+                            .setTimeZone("UTC+05:30")
+                            .setPageToken(pageToken)
+                            .execute()
 
-                val items: List<Event> = events.items
-                for (event in items) {
-                    yield(event)
-                }
-                pageToken = events.nextPageToken
-            } while (pageToken != null)
+                    val items: List<Event> = events.items
+                    for (event in items) {
+                        yield(GCalResult.Success(event))
+                    }
+                    pageToken = events.nextPageToken
+                } while (pageToken != null)
+            } catch (e: UserRecoverableAuthIOException) {
+                yield(GCalResult.NeedsConsent(e.intent))
+            } catch (t: Throwable) {
+                yield(GCalResult.Failure(t))
+            }
         }
     }
 

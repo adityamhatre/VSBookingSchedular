@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import com.adityamhatre.bookingscheduler.Application
 import com.adityamhatre.bookingscheduler.R
 import com.adityamhatre.bookingscheduler.customViews.MonthView
 import com.adityamhatre.bookingscheduler.dtos.AppDate
@@ -28,6 +28,13 @@ private const val YEAR = "year"
 class ListOfBookingsFragment : Fragment() {
 
     private val viewModel: ListOfBookingsViewModel by viewModels()
+    private val consentLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            // After user grants consent, clear cached list so VM re-fetches
+            viewModel.bookingsList = null
+            setupRecyclerView(requireView())
+        }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +91,13 @@ class ListOfBookingsFragment : Fragment() {
             }
         }
 
+        viewModel.getNeedsConsentIntent().observe(viewLifecycleOwner) {
+            if (it == null) {
+                return@observe
+            }
+            view.findViewById<ProgressBar>(R.id.loading_icon).visibility = View.GONE
+            consentLauncher.launch(it)
+        }
     }
 
     private fun setupTitle(view: View) {
@@ -130,7 +144,7 @@ class ListOfBookingsFragment : Fragment() {
                     TimeFrameInputFragment.newInstance(
                         viewModel.bookingsOn.date,
                         viewModel.bookingsOn.month,
-                        year = Application.year,
+                        year = viewModel.bookingsOn.year,
                         adapterContainer = viewModel.adapterContainer,
                     )
                 )
@@ -146,7 +160,7 @@ class ListOfBookingsFragment : Fragment() {
                     TimeFrameInputFragment.newInstance(
                         viewModel.bookingsOn.date,
                         viewModel.bookingsOn.month,
-                        year = Application.year,
+                        year = viewModel.bookingsOn.year,
                         adapterContainer = viewModel.adapterContainer,
                         oneDayBooking = true
                     )
