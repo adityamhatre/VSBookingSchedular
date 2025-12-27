@@ -36,10 +36,10 @@
                 android:text="@string/_9_30_am_to_5_00_pm" />
 
             <RadioButton
-                android:id="@+id/one_day_booking_timing_4_00_pm_to_12_00_am"
+                android:id="@+id/one_day_booking_timing_4_00_pm_to_11_55_pm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/_4_00_pm_to_12_00_am" />
+                android:text="@string/_4_00_pm_to_11_55_pm" />
 
         </RadioGroup>
 

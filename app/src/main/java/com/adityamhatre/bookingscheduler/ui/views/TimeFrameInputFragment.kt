@@ -5,7 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.DatePicker
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.RadioGroup
+import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -21,9 +28,6 @@ import com.adityamhatre.bookingscheduler.utils.TwoDigitFormatter
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
-import java.util.*
-
-
 
 
 private const val DATE = "date"
@@ -120,13 +124,13 @@ class TimeFrameInputFragment(private val adapterContainer: AdapterContainer<Book
                     viewModel.checkOutDateTime.hour = 17
                     viewModel.checkOutDateTime.minute = 0
                 }
-                R.id.one_day_booking_timing_4_00_pm_to_12_00_am -> {
+                R.id.one_day_booking_timing_4_00_pm_to_11_55_pm -> {
                     viewModel.checkInDateTime.hour = 16
                     viewModel.checkInDateTime.minute = 0
 
-                    viewModel.checkOutDateTime = viewModel.checkInDateTime.addOneDay()
-                    viewModel.checkOutDateTime.hour = 0
-                    viewModel.checkOutDateTime.minute = 0
+                    viewModel.checkOutDateTime = viewModel.checkInDateTime.copy()
+                    viewModel.checkOutDateTime.hour = 23
+                    viewModel.checkOutDateTime.minute = 55
                 }
                 else -> {
                 }
